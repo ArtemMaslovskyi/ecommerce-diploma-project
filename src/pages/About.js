@@ -1,27 +1,42 @@
 import React from "react";
 import { Parallax, ParallaxLayer } from "@react-spring/parallax";
-import background1 from "../pages/background1.png";
+import mainLogo from "../mainLogo.png";
+import auction from "../pages/auction.png";
 
 export default function About() {
   return (
-    <div className="*:bg-gradient-to-b from-blue-800/80 to-main-yellow/50">
+    <div className="*:bg-main-yellow/70">
       <Parallax pages={4}>
-        <ParallaxLayer speed={0.5}>
-          <h2 className="m-6 font-bold text-center text-8xl text-main-yellow">
-            Who are we?
-          </h2>
-          <p className="absolute bottom-0 text-4xl text-center right-2/4 text-white/80">
-            We are trading platform that provides
-          </p>
-        </ParallaxLayer>
-        <ParallaxLayer sticky={{ start: 1, end: 2 }} speed={1}>
-          <div className="absolute flex p-6 rounded-2xl w-fit bg-main-yellow right-2/4">
-            <h2 className="text-3xl font-bold text-slate-100">Trading of:</h2>
+        <ParallaxLayer
+          className="bg-graph-pattern"
+          speed={-0.3}
+          style={{
+            backgroundRepeat: "repeat-x",
+            backgroundPositionY: "center",
+          }}
+        >
+          <div className="flex justify-center w-full backdrop-blur-sm">
+            <img
+              src={mainLogo}
+              alt="logo"
+              className="w-[600px] h-[600px] "
+            ></img>
           </div>
         </ParallaxLayer>
-        <ParallaxLayer offset={1.5}>
-          <div>
-            <h2>fdsf</h2>
+        <ParallaxLayer offset={0.8} className="bg-main-blue">
+          <div className="">
+            <h2 className="m-10 text-6xl font-bold text-center text-main-yellow">
+              Corgi-Wallet Bazaar
+            </h2>
+            <div className="flex">
+              <div className="w-2/4">
+                <p className="m-8 text-2xl text-white">
+                  This is a trading platform where you can put your lots up for
+                  auction and sell them
+                </p>
+              </div>
+              <img src={auction} alt="auction" className="m-8" />
+            </div>
           </div>
         </ParallaxLayer>
       </Parallax>

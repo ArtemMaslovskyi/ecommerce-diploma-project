@@ -12,6 +12,10 @@ module.exports = {
     extend: {
       colors: {
         "main-yellow": "#FFC700",
+        "main-blue": "#00296B",
+      },
+      backgroundImage: {
+        "graph-pattern": "url('./pages/graph.png')",
       },
     },
   },
