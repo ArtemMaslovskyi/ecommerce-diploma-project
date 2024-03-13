@@ -11,7 +11,7 @@ export default function Home() {
       <div className="flex justify-between ">
         <div className="p-8">
           <h1 className="mb-6 text-6xl font-bold text-wrap">
-            Best way to <w className=" text-main-yellow">Check & find</w>
+            Best way to <span className=" text-main-yellow">Check & find</span>
           </h1>
           <h2 className="opacity-80 text-wrap">
             The place where you can find and check your investments
