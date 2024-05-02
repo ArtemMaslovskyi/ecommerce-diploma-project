@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import mainLogo from "../mainLogo.png";
 import { CiBitcoin } from "react-icons/ci";
 import { AiFillGold } from "react-icons/ai";
 import { RiExchangeFundsFill } from "react-icons/ri";
 import { MdOutlineShoppingCart } from "react-icons/md";
+import Currencies from "./currency";
 
 export default function Home() {
   return (
@@ -45,6 +46,7 @@ export default function Home() {
           </div>
         </div>
       </div>
+      <Currencies />
     </section>
   );
 }
