@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import mainLogo from "../mainLogo.png";
 import { CiBitcoin } from "react-icons/ci";
 import { AiFillGold } from "react-icons/ai";
@@ -7,6 +7,11 @@ import { MdOutlineShoppingCart } from "react-icons/md";
 import Currencies from "./currency";
 
 export default function Home() {
+  const [isActive, setIsActive] = useState(true);
+  function handleClick() {
+    setIsActive((prevState) => !prevState);
+    // console.log(isActive);
+  }
   return (
     <section className="mx-4 border-2 border-t-0">
       <div className="flex justify-between ">
@@ -21,7 +26,7 @@ export default function Home() {
         <img src={mainLogo} alt="Logo" className="h-96"></img>
       </div>
       <div className="flex *:mx-2 mx-4 *:cursor-pointer">
-        <div className="relative">
+        <div className="relative" onClick={handleClick}>
           <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
           <div className="absolute top-0 left-0 ">
             <CiBitcoin className="w-16 h-16" />
@@ -46,7 +51,9 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <Currencies />
+      <div className={isActive ? "flex justify-center" : "hidden"}>
+        <Currencies />
+      </div>
     </section>
   );
 }
