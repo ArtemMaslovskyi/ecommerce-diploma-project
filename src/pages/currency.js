@@ -65,7 +65,7 @@ export default function Currencies() {
               className="p-2 m-4 transition-colors duration-100 border-2 rounded-md hover:text-black hover:bg-white hover:border-black"
               onClick={handleShow}
             >
-              Show more
+              Show {isShow ? "less" : "more"}
             </button>
           </div>
           <div className="flex gap-4 text-center">

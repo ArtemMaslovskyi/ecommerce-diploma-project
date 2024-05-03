@@ -5,12 +5,13 @@ import { AiFillGold } from "react-icons/ai";
 import { RiExchangeFundsFill } from "react-icons/ri";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import Currencies from "./currency";
+import Lots from "./Lots";
 
 export default function Home() {
-  const [isActive, setIsActive] = useState(true);
-  function handleClick() {
-    setIsActive((prevState) => !prevState);
-    // console.log(isActive);
+  const [activeComponent, setActiveComponent] = useState("Currencies");
+
+  function handleClick(component) {
+    setActiveComponent(component);
   }
   return (
     <section className="mx-4 border-2 border-t-0">
@@ -26,10 +27,10 @@ export default function Home() {
         <img src={mainLogo} alt="Logo" className="h-96"></img>
       </div>
       <div className="flex *:mx-2 mx-4 *:cursor-pointer">
-        <div className="relative" onClick={handleClick}>
+        <div className="relative" onClick={() => handleClick("Currencies")}>
           <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
           <div className="absolute top-0 left-0 ">
-            <CiBitcoin className="w-16 h-16" />
+            <CiBitcoin className="w-16 h-16" /> {/*cuurency button*/}
           </div>
         </div>
         <div className="relative">
@@ -44,16 +45,17 @@ export default function Home() {
             <RiExchangeFundsFill className="w-16 h-16" />
           </div>
         </div>
-        <div className="relative">
+        <div className="relative" onClick={() => handleClick("Lots")}>
           <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
           <div className="absolute top-1 left-1 ">
-            <MdOutlineShoppingCart className="w-14 h-14" />
+            <MdOutlineShoppingCart className="w-14 h-14" /> {/*lots button*/}
           </div>
         </div>
       </div>
-      <div className={isActive ? "flex justify-center" : "hidden"}>
-        <Currencies />
-      </div>
+      <section className="w-full">
+        {activeComponent === "Currencies" && <Currencies />}
+        {activeComponent === "Lots" && <Lots />}
+      </section>
     </section>
   );
 }
