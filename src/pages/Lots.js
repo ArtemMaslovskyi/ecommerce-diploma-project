@@ -1,11 +1,16 @@
 import React, { useState } from "react";
 import { Modal } from "flowbite-react";
+import { CiImport } from "react-icons/ci";
 
 export default function Lots() {
   const [openModal, setOpenModal] = useState(false);
+  const [openCreateMenu, setOpenCreateMenu] = useState(false);
   return (
     <section className="mx-6 my-4">
-      <button className="p-2 mx-10 my-4 text-lg border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
+      <button
+        className="p-2 mx-10 my-4 text-lg border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
+        onClick={() => setOpenCreateMenu(true)}
+      >
         Create lot
       </button>
       <div className="mx-8 max-h-[500px] w-[600px] text-wrap truncate">
@@ -61,6 +66,44 @@ export default function Lots() {
               repellat odio iure nulla voluptatem. Exercitationem pariatur ex
               animi voluptate facilis.
             </p>
+          </div>
+        </Modal.Body>
+      </Modal>
+      <Modal show={openCreateMenu} onClose={() => setOpenCreateMenu(false)}>
+        <Modal.Header className="uppercase bg-slate-900">
+          Create your lot
+        </Modal.Header>
+        <Modal.Body className="bg-slate-900">
+          <div className="space-y-6">
+            <div className="flex justify-between gap-3">
+              <form>
+                <div className="flex justify-between gap-3">
+                  <label for="file-upload">
+                    <input
+                      id="file-upload"
+                      type="file"
+                      accept=".jpg, .jpeg, .png"
+                      className="hidden"
+                    />
+                    <div className="flex items-center justify-center bg-white rounded-md cursor-pointer size-48">
+                      <CiImport size={"160px"} />
+                    </div>
+                  </label>
+                  <div className="space-y-2 *:w-[300px] *:bg-transparent *:border-t-0 *:border-b-2 *:border-x-0 *:text-white ">
+                    <input
+                      type="text"
+                      placeholder="Enter your lot name"
+                      className=""
+                    />
+                    <textarea></textarea>
+                    <div className="*:bg-transparent *:border-t-0 *:border-b-2 *:border-x-0 *:text-white flex items-center gap-2 *:mb-2 border-x  -0">
+                      <input type="number" className="w-[140px]"></input>
+                      <input type="number" className="w-[140px]"></input>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            </div>
           </div>
         </Modal.Body>
       </Modal>
