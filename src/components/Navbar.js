@@ -2,7 +2,6 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IoIosSunny } from "react-icons/io";
 import { IoIosMoon } from "react-icons/io";
-import { Avatar, Dropdown } from "flowbite-react";
 import mainLogo from "../mainLogo.png";
 
 export default function Navbar() {
@@ -47,11 +46,16 @@ export default function Navbar() {
         </Link>
         <Link to="/Contact">
           <button className="text-[28px] opacity-80 dark:text-white">
-            Contact
+            FAQ
           </button>
         </Link>
       </div>
       <div className="*:mx-2 flex items-center">
+        <Link to="/Profile">
+          <button className="text-[28px] opacity-80 dark:text-white">
+            Profile
+          </button>
+        </Link>
         <button onClick={toggleTheme}>
           {" "}
           {darkMode ? (
@@ -60,29 +64,6 @@ export default function Navbar() {
             <IoIosMoon size={32} color="373737" />
           )}
         </button>
-
-        <Dropdown
-          label={
-            <Avatar
-              alt="User settings"
-              img="/images/people/profile-picture-5.jpg"
-              rounded
-            />
-          }
-          arrowIcon={false}
-          inline
-        >
-          <Dropdown.Header>
-            <span className="block text-sm">Bonnie Green</span>
-            <span className="block text-sm font-medium truncate">
-              name@flowbite.com
-            </span>
-          </Dropdown.Header>
-          <Dropdown.Item>Settings</Dropdown.Item>
-          <Dropdown.Item>Earnings</Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item>Sign out</Dropdown.Item>
-        </Dropdown>
       </div>
     </nav>
   );

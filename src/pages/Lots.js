@@ -102,6 +102,14 @@ export default function Lots() {
                     </div>
                   </div>
                 </div>
+                <div className="flex justify-end">
+                  <button
+                    type="submit"
+                    className="p-6 m-4 font-bold text-white transition-colors duration-150 delay-75 bg-black rounded-lg hover:bg-white hover:text-black"
+                  >
+                    Submit
+                  </button>
+                </div>
               </form>
             </div>
           </div>
