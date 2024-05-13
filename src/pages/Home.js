@@ -1,8 +1,6 @@
 import React, { useState } from "react";
 import mainLogo from "../mainLogo.png";
 import { CiBitcoin } from "react-icons/ci";
-import { AiFillGold } from "react-icons/ai";
-import { RiExchangeFundsFill } from "react-icons/ri";
 import { MdOutlineShoppingCart } from "react-icons/md";
 import Currencies from "./currency";
 import Lots from "./Lots";
@@ -31,18 +29,6 @@ export default function Home() {
           <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
           <div className="absolute top-0 left-0 ">
             <CiBitcoin className="w-16 h-16" /> {/*cuurency button*/}
-          </div>
-        </div>
-        <div className="relative">
-          <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
-          <div className="absolute top-0 left-0 ">
-            <AiFillGold className="w-16 h-16" />
-          </div>
-        </div>
-        <div className="relative">
-          <div className="flex justify-center w-16 h-16 bg-blue-600 rounded-full blur-sm"></div>
-          <div className="absolute top-0 left-0 ">
-            <RiExchangeFundsFill className="w-16 h-16" />
           </div>
         </div>
         <div className="relative" onClick={() => handleClick("Lots")}>

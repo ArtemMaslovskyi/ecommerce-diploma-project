@@ -51,7 +51,7 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="*:mx-2 flex items-center">
-        <Link to="/Profile">
+        <Link to="/Login">
           <button className="text-[28px] opacity-80 dark:text-white">
             Profile
           </button>

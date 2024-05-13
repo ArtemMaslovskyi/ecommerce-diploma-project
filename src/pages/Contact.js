@@ -8,7 +8,7 @@ export default function Contact() {
         </h2>
       </div>
       <div className="p-2 mx-4 space-y-2 border-b-2 border-white border-opacity-80">
-        <p>Question 1</p>
+        <h2 className="text-4xl font-bold">Question 1</h2>
         <p className="w-1/2">
           Lorem ipsum dolor, sit amet consectetur adipisicing elit. Laboriosam
           voluptas quas, deserunt incidunt laborum cumque perferendis beatae
