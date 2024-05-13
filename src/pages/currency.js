@@ -4,32 +4,37 @@ export default function Currencies() {
   const [currency, setCurrency] = useState({});
   const [selectedCurrencies, setSelectedCurrencies] = useState([]);
   const [isShow, setShow] = useState(false);
+  const [value, setValue] = useState("eur");
 
   useEffect(() => {
-    fetch("https://latest.currency-api.pages.dev/v1/currencies/eur.json")
+    fetch(`https://latest.currency-api.pages.dev/v1/currencies/${value}.json`)
       .then((res) => res.json())
       .then((data) => {
         // console.log(data);
         setCurrency(data);
         const defaultSelectedCurrencies = ["usd", "eur", "uah"].map((code) => ({
           code,
-          rate: data.eur[code],
+          rate: data[value][code],
         }));
         setSelectedCurrencies(defaultSelectedCurrencies);
       })
       .catch((error) => {
         console.error("Помилка отримання даних про валюту:", error);
       });
-  }, []);
+  }, [value]);
 
   const handleCurrencyChange = (event) => {
     const code = event.target.value;
-    const rate = currency.eur[code];
+    const rate = currency[value][code];
     if (event.target.checked) {
       setSelectedCurrencies([...selectedCurrencies, { code, rate }]);
     } else {
       setSelectedCurrencies(selectedCurrencies.filter((c) => c.code !== code));
     }
+  };
+
+  const handleBaseChange = (base) => {
+    setValue(base.toLowerCase());
   };
 
   function handleShow() {
@@ -41,6 +46,24 @@ export default function Currencies() {
       <div>
         <div className="">
           <h3 className="my-4 text-4xl font-bold">Select Currencies:</h3>
+          <button
+            onClick={() => handleBaseChange("usd")}
+            className="p-2 m-4 transition-colors duration-100 border-2 rounded-md hover:text-black hover:bg-white hover:border-black"
+          >
+            USD
+          </button>
+          <button
+            onClick={() => handleBaseChange("eur")}
+            className="p-2 m-4 transition-colors duration-100 border-2 rounded-md hover:text-black hover:bg-white hover:border-black"
+          >
+            EUR
+          </button>
+          <button
+            onClick={() => handleBaseChange("uah")}
+            className="p-2 m-4 transition-colors duration-100 border-2 rounded-md hover:text-black hover:bg-white hover:border-black"
+          >
+            UAH
+          </button>
           <div
             className={
               isShow
@@ -48,7 +71,7 @@ export default function Currencies() {
                 : "grid grid-cols-8 gap-1 overflow-hidden h-28 text-ellipsis"
             }
           >
-            {Object.keys(currency.eur || {}).map((code) => (
+            {Object.keys(currency[value] || {}).map((code) => (
               <div key={code}>
                 <input
                   type="checkbox"
