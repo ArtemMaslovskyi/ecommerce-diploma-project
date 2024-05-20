@@ -1,44 +1,44 @@
-const {Contact} = require("../models/contacts");
+const {Lot} = require("../models/lot");
 const { HttpsError, ctrlWrapper } = require("../error_handler");
 
-const listContacts = async (req, res) => {
+const listLots = async (req, res) => {
     const {_id: owner} = req.user;
     const {page = 1, limit = 20} = req.query;
     const skip = (page - 1) * limit;
-    const result = await Contact.find({owner}, "-createdAt -updatedAt", {skip, limit}).populate("owner", "name email");
+    const result = await Lot.find({owner}, "-createdAt -updatedAt", {skip, limit}).populate("owner", "title price");
     res.json(result);
 }
 
-const getContactById = async (req, res) => {
+const getLotById = async (req, res) => {
     const { id } = req.params;
     const {_id: owner} = req.user;
-    const result = await Contact.findOne({ $and: [{ _id: id }, { owner }] });
+    const result = await Lot.findOne({ $and: [{ _id: id }, { owner }] });
     if (!result) {
         throw HttpsError(404, "Not found");
     }
     res.json(result);
 }
 
-const addContact = async (req, res) => {
+const addLot = async (req, res) => {
     const {_id: owner} = req.user;
-    const result = await Contact.create({...req.body, owner});
+    const result = await Lot.create({...req.body, owner});
     res.status(201).json(result);
 }
 
-const updateContact = async (req, res) => {
+const updateLot = async (req, res) => {
     const { id } = req.params;
     const {_id: owner} = req.user;
-    const result = await Contact.findOneAndUpdate({ $and: [{ _id: id }, { owner }] }, req.body, { new: true });
+    const result = await Lot.findOneAndUpdate({ $and: [{ _id: id }, { owner }] }, req.body, { new: true });
     if (!result) {
         throw HttpsError(404, "Not found");
     }
     res.json(result);
 }
 
-const removeContact = async (req, res) => {
+const removeLot = async (req, res) => {
     const { id } = req.params;
     const {_id: owner} = req.user;
-    const result = await Contact.findOneAndDelete({ $and: [{ _id: id }, { owner }] });
+    const result = await Lot.findOneAndDelete({ $and: [{ _id: id }, { owner }] });
     if (!result) {
         throw HttpsError(404, "Not found");
     }
@@ -46,10 +46,10 @@ const removeContact = async (req, res) => {
         message: "Delete success"
     })
 }
-const updateFavoriteContact = async (req, res) => {
+const updateFavoriteLot = async (req, res) => {
     const { id } = req.params;
     const {_id: owner} = req.user;
-    const result = await Contact.findOneAndUpdate({ $and: [{ _id: id }, { owner }] }, req.body, {new: true});
+    const result = await Lot.findOneAndUpdate({ $and: [{ _id: id }, { owner }] }, req.body, {new: true});
     if (!result) {
         throw HttpsError(404, "Not found");
     }
@@ -57,10 +57,10 @@ const updateFavoriteContact = async (req, res) => {
 }
 
 module.exports = {
-    listContacts: ctrlWrapper(listContacts),
-    getContactById: ctrlWrapper(getContactById),
-    addContact: ctrlWrapper(addContact),
-    updateContact: ctrlWrapper(updateContact),
-    removeContact: ctrlWrapper(removeContact),
-    updateFavoriteContact: ctrlWrapper(updateFavoriteContact)
+    listLots: ctrlWrapper(listLots),
+    getLotById: ctrlWrapper(getLotById),
+    addLot: ctrlWrapper(addLot),
+    updateLot: ctrlWrapper(updateLot),
+    removeLot: ctrlWrapper(removeLot),
+    updateFavoriteLot: ctrlWrapper(updateFavoriteLot)
 }
