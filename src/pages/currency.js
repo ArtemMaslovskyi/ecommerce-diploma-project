@@ -2,32 +2,57 @@ import React, { useEffect, useState } from "react";
 
 export default function Currencies() {
   const [currency, setCurrency] = useState({});
+  const [previousCurrency, setPreviousCurrency] = useState({});
   const [selectedCurrencies, setSelectedCurrencies] = useState([]);
   const [isShow, setShow] = useState(false);
   const [value, setValue] = useState("eur");
 
+  const getYesterdayDate = () => {
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    return yesterday.toISOString().split("T")[0];
+  };
+
   useEffect(() => {
-    fetch(`https://latest.currency-api.pages.dev/v1/currencies/${value}.json`)
-      .then((res) => res.json())
-      .then((data) => {
-        // console.log(data);
-        setCurrency(data);
+    const fetchCurrencyData = async () => {
+      try {
+        const latestRes = await fetch(
+          `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/${value}.json`
+        );
+        const latestData = await latestRes.json();
+        setCurrency(latestData);
+
+        const yesterday = getYesterdayDate();
+        const prevRes = await fetch(
+          `https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@${yesterday}/v1/currencies/${value}.json`
+        );
+        const prevData = await prevRes.json();
+        setPreviousCurrency(prevData);
+
         const defaultSelectedCurrencies = ["usd", "eur", "uah"].map((code) => ({
           code,
-          rate: data[value][code],
+          rate: latestData[value][code],
+          previousRate: prevData[value][code],
         }));
         setSelectedCurrencies(defaultSelectedCurrencies);
-      })
-      .catch((error) => {
+      } catch (error) {
         console.error("Помилка отримання даних про валюту:", error);
-      });
+      }
+    };
+
+    fetchCurrencyData();
   }, [value]);
 
   const handleCurrencyChange = (event) => {
     const code = event.target.value;
     const rate = currency[value][code];
+    const previousRate = previousCurrency[value][code];
     if (event.target.checked) {
-      setSelectedCurrencies([...selectedCurrencies, { code, rate }]);
+      setSelectedCurrencies([
+        ...selectedCurrencies,
+        { code, rate, previousRate },
+      ]);
     } else {
       setSelectedCurrencies(selectedCurrencies.filter((c) => c.code !== code));
     }
@@ -40,6 +65,12 @@ export default function Currencies() {
   function handleShow() {
     setShow((prevState) => !prevState);
   }
+
+  const getColor = (rate, previousRate) => {
+    if (rate > previousRate) return "red";
+    if (rate < previousRate) return "green";
+    return "yellow";
+  };
 
   return (
     <section className="flex justify-center p-2">
@@ -92,10 +123,12 @@ export default function Currencies() {
             </button>
           </div>
           <div className="flex gap-4 text-center">
-            {selectedCurrencies.map(({ code, rate }) => (
+            {selectedCurrencies.map(({ code, rate, previousRate }) => (
               <div key={code}>
                 <p>{code.toUpperCase()}</p>
-                <p>{rate.toFixed(6)}</p>
+                <p style={{ color: getColor(rate, previousRate) }}>
+                  {rate.toFixed(6)}
+                </p>
               </div>
             ))}
           </div>
