@@ -4,6 +4,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import Layout from "./Layout";
 
@@ -15,8 +16,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/About" element={<About />} />
           <Route path="/Contact" element={<Contact />} />
-          {/* <Route path="/Profile" element={<Profile />} /> */}
+          <Route path="/Profile" element={<Profile />} />
           <Route path="/Login" element={<Login />} />
+          <Route path="/Register" element={<Register />} />
         </Route>
       </Routes>
     </Router>

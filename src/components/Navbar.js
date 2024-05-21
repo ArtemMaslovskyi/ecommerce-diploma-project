@@ -1,11 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { IoIosSunny } from "react-icons/io";
-import { IoIosMoon } from "react-icons/io";
+import { IoIosSunny, IoIosMoon } from "react-icons/io";
 import mainLogo from "../mainLogo.png";
 
 export default function Navbar() {
-  //Dark mode setter
   const [darkMode, setDarkMode] = React.useState(
     localStorage.theme === "dark" ||
       (!("theme" in localStorage) &&
@@ -14,11 +12,9 @@ export default function Navbar() {
 
   React.useEffect(() => {
     if (darkMode) {
-      //if set dark mode add class dark and save it in local storage
       document.documentElement.classList.add("dark");
       localStorage.theme = "dark";
     } else {
-      //else remove class dark and set light in local storage
       document.documentElement.classList.remove("dark");
       localStorage.theme = "light";
     }
@@ -33,7 +29,7 @@ export default function Navbar() {
       <div className="*:mx-2 flex items-center">
         <Link to="/">
           <div className="flex">
-            <img className="w-16" src={mainLogo} alt="logo"></img>
+            <img className="w-16" src={mainLogo} alt="logo" />
             <button className="text-4xl font-bold text-main-yellow">
               Corgi-Wallet Bazaar
             </button>
@@ -53,11 +49,10 @@ export default function Navbar() {
       <div className="*:mx-2 flex items-center">
         <Link to="/Login">
           <button className="text-[28px] opacity-80 dark:text-white">
-            Profile
+            Login
           </button>
         </Link>
         <button onClick={toggleTheme}>
-          {" "}
           {darkMode ? (
             <IoIosSunny size={32} color="white" />
           ) : (
