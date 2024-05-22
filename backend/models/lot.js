@@ -23,7 +23,7 @@ const lotSchema = new Schema( {
   },
   avatarURL:{
     type: String,
-    required: true,
+    required: [true, 'Avatar is required']
   }
 }, { versionKey: false, timestamps: true });
 

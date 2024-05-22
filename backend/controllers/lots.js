@@ -1,6 +1,9 @@
 const {Lot} = require("../models/lot");
 const { HttpsError, ctrlWrapper } = require("../error_handler");
-
+const gravatar = require("gravatar");
+const path = require ("path");
+const fs = require("fs");
+const avatarDir = path.join(__dirname, '../', 'public', 'avatars');
 const listLots = async (req, res) => {
     const {_id: owner} = req.user;
     const {page = 1, limit = 20} = req.query;
