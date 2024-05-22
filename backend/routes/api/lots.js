@@ -1,7 +1,7 @@
 const express = require('express');
 const ctrl = require("../../controllers/lots");
 
-const {validateBody, isValidId, authenticate} = require("../../middlewares");
+const {validateBody, isValidId, authenticate, avatarSize} = require("../../middlewares");
 
 const {schemas} = require("../../models/lot");
 const router = express.Router();
@@ -17,5 +17,8 @@ router.put("/:id", authenticate, isValidId, validateBody(schemas.changeSchema), 
 router.delete("/:id", authenticate, isValidId, ctrl.removeLot);
 
 router.patch("/:id/favorite", authenticate, isValidId, validateBody(schemas.schemaUpdateFavorite), ctrl.updateFavoriteContact);
+
+router.patch("/avatars", authenticate, upload.single("avatar"), avatarSize, ctrl.updateLotAvatar);
+
 console.log("I am running!");
 module.exports = router;

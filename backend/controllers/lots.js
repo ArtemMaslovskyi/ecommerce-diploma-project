@@ -24,7 +24,8 @@ const getLotById = async (req, res) => {
 
 const addLot = async (req, res) => {
     const {_id: owner} = req.user;
-    const result = await Lot.create({...req.body, owner});
+    const avatarURL = gravatar.url(owner.email);
+    const result = await Lot.create({...req.body, owner, avatarURL});
     res.status(201).json(result);
 }
 
@@ -58,12 +59,29 @@ const updateFavoriteLot = async (req, res) => {
     }
     res.json(result);
 }
-
+const updateLotAvatar = async (req, res) => {
+    const { id } = req.params;
+    const { path: tempUpload, originalname } = req.file;
+    const filename = `${id}_${originalname}`;
+    const resultUpload = path.join(avatarDir, filename);
+    try {
+        fs.renameSync(tempUpload, resultUpload);
+        const avatarURL = path.join('avatars', filename);
+        await Lot.findByIdAndUpdate(id, { avatarURL });
+        res.json({
+            avatarURL,
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+};
 module.exports = {
     listLots: ctrlWrapper(listLots),
     getLotById: ctrlWrapper(getLotById),
     addLot: ctrlWrapper(addLot),
     updateLot: ctrlWrapper(updateLot),
     removeLot: ctrlWrapper(removeLot),
-    updateFavoriteLot: ctrlWrapper(updateFavoriteLot)
+    updateFavoriteLot: ctrlWrapper(updateFavoriteLot),
+    updateLotAvatar: ctrlWrapper(updateLotAvatar)
 }
