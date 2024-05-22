@@ -1,5 +1,6 @@
 import React from "react";
 import { MdPhotoCamera } from "react-icons/md";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   return (
@@ -11,11 +12,15 @@ export default function Profile() {
         </div>
         <div className="space-y-6">
           <div className="flex space-x-4 *:font-bold *:text-3xl">
-            <p>Frist Name</p>
+            <p>First Name</p>
             <p>Last Name</p>
           </div>
-          <p>Date of Birth: {}</p>
           <p>Info: </p>
+          <Link to="/EditProfile">
+            <button className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
+              Edit Profile
+            </button>
+          </Link>
         </div>
       </div>
       <div>
@@ -31,7 +36,7 @@ export default function Profile() {
               <p className="opacity-90">[PH]Lot Description</p>
               <div className="flex justify-between gap-2 *:opacity-90">
                 <p>Category: {}</p>
-                <p>Stating price: {}</p>
+                <p>Starting price: {}</p>
               </div>
             </div>
           </div>
