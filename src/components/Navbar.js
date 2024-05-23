@@ -2,8 +2,11 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { IoIosSunny, IoIosMoon } from "react-icons/io";
 import mainLogo from "../mainLogo.png";
+import { AuthContext } from "../AuthContext";
 
 export default function Navbar() {
+  const { isLoggedIn } = React.useContext(AuthContext);
+
   const [darkMode, setDarkMode] = React.useState(
     localStorage.theme === "dark" ||
       (!("theme" in localStorage) &&
@@ -47,11 +50,19 @@ export default function Navbar() {
         </Link>
       </div>
       <div className="*:mx-2 flex items-center">
-        <Link to="/Profile">
-          <button className="text-[28px] opacity-80 dark:text-white">
-            Login
-          </button>
-        </Link>
+        {isLoggedIn ? (
+          <Link to="/Profile">
+            <button className="text-[28px] opacity-80 dark:text-white">
+              Profile
+            </button>
+          </Link>
+        ) : (
+          <Link to="/Login">
+            <button className="text-[28px] opacity-80 dark:text-white">
+              Login
+            </button>
+          </Link>
+        )}
         <button onClick={toggleTheme}>
           {darkMode ? (
             <IoIosSunny size={32} color="white" />

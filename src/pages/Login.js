@@ -1,11 +1,19 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { handleLogin } = React.useContext(AuthContext);
 
   const handleRegisterClick = () => {
     navigate("/register");
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    //JS for succes login in
+    handleLogin();
   };
 
   return (
