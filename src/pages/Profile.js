@@ -1,8 +1,19 @@
 import React from "react";
 import { MdPhotoCamera } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
+import users from "../usersData";
 
 export default function Profile() {
+  const { currentUser } = React.useContext(AuthContext);
+  const { handleLogout } = React.useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleLogoutClick = () => {
+    handleLogout();
+    navigate("/");
+  };
+
   return (
     <section className="p-10 space-y-4">
       <div className="grid grid-cols-2">
@@ -12,15 +23,22 @@ export default function Profile() {
         </div>
         <div className="space-y-6">
           <div className="flex space-x-4 *:font-bold *:text-3xl">
-            <p>First Name</p>
-            <p>Last Name</p>
+            <p>{currentUser.username}</p>
           </div>
-          <p>Info: </p>
-          <Link to="/EditProfile">
-            <button className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
-              Edit Profile
+          <p>Info: {currentUser.info}</p>
+          <div className="space-x-4">
+            <Link to="/EditProfile">
+              <button className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
+                Edit Profile
+              </button>
+            </Link>
+            <button
+              className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
+              onClick={handleLogoutClick}
+            >
+              Log Out
             </button>
-          </Link>
+          </div>
         </div>
       </div>
       <div>
