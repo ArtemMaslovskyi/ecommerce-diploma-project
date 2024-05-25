@@ -1,6 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 export default function Register() {
+  const { handleRegister } = useContext(AuthContext);
+  const { setIsLoggedIn } = useContext(AuthContext);
+  const navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     email: "",
     username: "",
@@ -10,6 +16,7 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState({});
+  const [serverError, setServerError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,8 +47,21 @@ export default function Register() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (validateForm()) {
-      console.log("Form submitted", formData);
-      // Handle form submission (e.g., send data to API)
+      const newUser = {
+        email: formData.email,
+        username: formData.username,
+        password: formData.password,
+        info: "",
+        avatar: formData.avatar,
+      };
+
+      const result = handleRegister(newUser);
+      if (result.success) {
+        setIsLoggedIn(true);
+        navigate("/Profile");
+      } else {
+        setServerError(result.message);
+      }
     }
   };
 
@@ -94,6 +114,7 @@ export default function Register() {
             className="text-black"
             onChange={handleFileChange}
           />
+          {serverError && <p className="text-red-500">{serverError}</p>}
         </div>
         <div className="space-x-4">
           <button

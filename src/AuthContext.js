@@ -13,7 +13,7 @@ const AuthProvider = ({ children }) => {
     );
     if (user) {
       setCurrentUser(user);
-      setIsLoggedIn(true); // Встановлюємо isLoggedIn на true після успішної аутентифікації
+      setIsLoggedIn(true);
       return true;
     }
     return false;
@@ -21,12 +21,29 @@ const AuthProvider = ({ children }) => {
 
   const handleLogout = () => {
     setCurrentUser(null);
-    setIsLoggedIn(false); // Встановлюємо isLoggedIn на false після виходу
+    setIsLoggedIn(false);
+  };
+
+  const handleRegister = (newUser) => {
+    const existingUser = users.find((user) => user.email === newUser.email);
+    if (existingUser) {
+      return { success: false, message: "Email already registered." };
+    }
+    users.push(newUser);
+    setCurrentUser(newUser);
+    return { success: true };
   };
 
   return (
     <AuthContext.Provider
-      value={{ currentUser, isLoggedIn, handleLogin, handleLogout }}
+      value={{
+        currentUser,
+        isLoggedIn,
+        setIsLoggedIn,
+        handleLogin,
+        handleLogout,
+        handleRegister,
+      }}
     >
       {children}
     </AuthContext.Provider>

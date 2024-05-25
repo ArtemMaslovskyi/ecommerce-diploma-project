@@ -5,6 +5,7 @@ import { AuthContext } from "../AuthContext";
 export default function Login() {
   const navigate = useNavigate();
   const { handleLogin } = useContext(AuthContext);
+  const { setIsLoggedIn } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -16,6 +17,7 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (handleLogin(email, password)) {
+      setIsLoggedIn(true);
       navigate("/Profile");
     } else {
       setError("Invalid email or password");
