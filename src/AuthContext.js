@@ -34,6 +34,16 @@ const AuthProvider = ({ children }) => {
     return { success: true };
   };
 
+  const updateUser = (updatedUser) => {
+    const updatedUsers = users.map((user) => {
+      if (user.email === currentUser.email) {
+        return updatedUser;
+      }
+      return user;
+    });
+    setCurrentUser(updatedUser);
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -43,6 +53,7 @@ const AuthProvider = ({ children }) => {
         handleLogin,
         handleLogout,
         handleRegister,
+        updateUser,
       }}
     >
       {children}

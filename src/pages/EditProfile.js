@@ -1,10 +1,12 @@
 import React, { useState } from "react";
+import { AuthContext } from "../AuthContext";
 
 export default function EditProfile() {
+  const { updateUser } = React.useContext(AuthContext);
+  const { currentUser } = React.useContext(AuthContext);
+
   const [formData, setFormData] = useState({
-    firstName: "",
-    lastName: "",
-    dateOfBirth: "",
+    username: "",
     info: "",
     avatar: null,
   });
@@ -26,7 +28,14 @@ export default function EditProfile() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Profile updated", formData);
+    const updatedUser = {
+      ...currentUser,
+      username: formData.username,
+      info: formData.info,
+      avatar: formData.avatar,
+    };
+    updateUser(updatedUser);
+    console.log("Profile updated", updatedUser);
   };
 
   return (
@@ -36,20 +45,12 @@ export default function EditProfile() {
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col w-1/3 space-y-4">
-          <p>First Name</p>
+          <p>Username</p>
           <input
             type="text"
-            name="firstName"
+            name="username"
             className="text-black"
-            value={formData.firstName}
-            onChange={handleChange}
-          />
-          <p>Last Name</p>
-          <input
-            type="text"
-            name="lastName"
-            className="text-black"
-            value={formData.lastName}
+            value={formData.username}
             onChange={handleChange}
           />
           <p>Info</p>
@@ -58,13 +59,6 @@ export default function EditProfile() {
             className="text-black"
             value={formData.info}
             onChange={handleChange}
-          />
-          <p>Avatar</p>
-          <input
-            type="file"
-            name="avatar"
-            className="text-black"
-            onChange={handleFileChange}
           />
         </div>
         <div className="space-x-4">
