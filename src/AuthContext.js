@@ -1,4 +1,4 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useContext, useState } from "react";
 import users from "./usersData";
 
 const AuthContext = createContext();
@@ -31,6 +31,7 @@ const AuthProvider = ({ children }) => {
     }
     users.push(newUser);
     setCurrentUser(newUser);
+    setIsLoggedIn(true);
     return { success: true };
   };
 
@@ -61,4 +62,8 @@ const AuthProvider = ({ children }) => {
   );
 };
 
-export { AuthContext, AuthProvider };
+const useAuth = () => {
+  return useContext(AuthContext);
+};
+
+export { AuthContext, AuthProvider, useAuth };

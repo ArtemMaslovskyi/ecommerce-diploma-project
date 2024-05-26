@@ -3,6 +3,7 @@ import { Modal } from "flowbite-react";
 import { CiImport } from "react-icons/ci";
 import lotData from "./lotData";
 import { getPaginationRange } from "./pagination";
+import { useAuth } from "../AuthContext";
 
 export default function Lots() {
   const [openModal, setOpenModal] = useState(false);
@@ -10,6 +11,17 @@ export default function Lots() {
   const [selectedLot, setSelectedLot] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const lotsPerPage = 10;
+  const [lots, setLots] = useState(lotData);
+  const { isLoggedIn } = useAuth();
+  const [error, setError] = useState("");
+
+  const [newLot, setNewLot] = useState({
+    name: "",
+    description: "",
+    price: "",
+    date: "",
+    image: "",
+  });
 
   const handleMoreInfo = (lot) => {
     setSelectedLot(lot);
@@ -18,23 +30,71 @@ export default function Lots() {
 
   const indexOfLastLot = currentPage * lotsPerPage;
   const indexOfFirstLot = indexOfLastLot - lotsPerPage;
-  const currentLots = lotData.slice(indexOfFirstLot, indexOfLastLot);
+  const currentLots = lots.slice(indexOfFirstLot, indexOfLastLot);
 
-  const totalPages = Math.ceil(lotData.length / lotsPerPage);
+  const totalPages = Math.ceil(lots.length / lotsPerPage);
   const paginationRange = getPaginationRange(currentPage, totalPages);
 
   const paginate = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
 
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setNewLot((prevNewLot) => ({
+      ...prevNewLot,
+      [name]: value,
+    }));
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+
+    reader.onloadend = () => {
+      setNewLot((prevNewLot) => ({
+        ...prevNewLot,
+        image: reader.result,
+      }));
+    };
+
+    if (file) {
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    setLots((prevLots) => [...prevLots, newLot]);
+    setNewLot({
+      name: "",
+      description: "",
+      price: "",
+      date: "",
+      image: "",
+    });
+    setOpenCreateMenu(false);
+  };
+
+  const handleCreateClick = () => {
+    if (isLoggedIn) {
+      setOpenCreateMenu(true);
+      setError("");
+    } else {
+      setError("You must be logged in to create a lot.");
+    }
+  };
+
   return (
     <section className="mx-6 my-4">
       <button
         className="p-2 mx-10 my-4 text-lg border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
-        onClick={() => setOpenCreateMenu(true)}
+        onClick={handleCreateClick}
       >
         Create lot
       </button>
+      {error && <p className="text-red-500">{error}</p>}
       <div className="grid grid-cols-2 mx-8 truncate text-wrap">
         {currentLots.map((lot, index) => (
           <div className="flex p-2" key={index}>
@@ -101,7 +161,7 @@ export default function Lots() {
         <Modal.Header className="uppercase bg-slate-900">
           Create your lot
         </Modal.Header>
-        <Modal.Body className="bg-slate-900">
+        <Modal.Body className="bg-slate-900 ">
           <div className="space-y-6">
             <div className="flex justify-between gap-3">
               <form>
@@ -121,16 +181,22 @@ export default function Lots() {
                     <input
                       type="text"
                       placeholder="Enter your lot name"
-                      className=""
+                      className="text-black"
                     />
-                    <textarea placeholder="Enter lot description"></textarea>
-                    <div className="flex items-center gap-2 mb-2 text-white bg-transparent border-t-0 border-b-2 border-x-0">
+                    <textarea
+                      placeholder="Enter lot description"
+                      className="text-black"
+                    ></textarea>
+                    <div className="flex items-center gap-2 mb-2 text-black bg-transparent border-t-0 border-b-2 border-x-0 ">
                       <input
                         type="number"
-                        className="w-[140px]"
+                        className="w-[140px] text-black"
                         placeholder="Price"
                       ></input>
-                      <input type="date" className="w-[140px]"></input>
+                      <input
+                        type="date"
+                        className="w-[140px] text-black"
+                      ></input>
                     </div>
                   </div>
                 </div>
