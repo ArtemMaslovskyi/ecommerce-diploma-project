@@ -43,7 +43,7 @@ export default function Lots() {
     const { name, value } = e.target;
     setNewLot((prevNewLot) => ({
       ...prevNewLot,
-      [name]: value,
+      [name]: name === "price" ? parseFloat(value) : value,
     }));
   };
 
@@ -66,7 +66,10 @@ export default function Lots() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    setLots((prevLots) => [...prevLots, newLot]);
+    setLots((prevLots) => [
+      ...prevLots,
+      { ...newLot, category: "Uncategorized" },
+    ]);
     setNewLot({
       name: "",
       description: "",
@@ -164,13 +167,14 @@ export default function Lots() {
         <Modal.Body className="bg-slate-900 ">
           <div className="space-y-6">
             <div className="flex justify-between gap-3">
-              <form>
+              <form onSubmit={handleSubmit}>
                 <div className="flex justify-between gap-3">
                   <label htmlFor="file-upload">
                     <input
                       id="file-upload"
                       type="file"
                       accept=".jpg, .jpeg, .png"
+                      onChange={handleImageChange}
                       className="hidden"
                     />
                     <div className="flex items-center justify-center bg-white rounded-md cursor-pointer size-48">
@@ -181,22 +185,34 @@ export default function Lots() {
                     <input
                       type="text"
                       placeholder="Enter your lot name"
+                      name="name"
+                      value={newLot.name}
+                      onChange={handleInputChange}
                       className="text-black"
                     />
                     <textarea
                       placeholder="Enter lot description"
+                      name="description"
+                      value={newLot.description}
+                      onChange={handleInputChange}
                       className="text-black"
                     ></textarea>
-                    <div className="flex items-center gap-2 mb-2 text-black bg-transparent border-t-0 border-b-2 border-x-0 ">
+                    <div className="flex items-center gap-2 mb-2 text-black bg-transparent border-t-0 border-b-2 border-x-0">
                       <input
                         type="number"
-                        className="w-[140px] text-black"
+                        name="price"
+                        value={newLot.price}
+                        onChange={handleInputChange}
                         placeholder="Price"
-                      ></input>
+                        className="w-[140px] text-black"
+                      />
                       <input
                         type="date"
+                        name="date"
+                        value={newLot.date}
+                        onChange={handleInputChange}
                         className="w-[140px] text-black"
-                      ></input>
+                      />
                     </div>
                   </div>
                 </div>

@@ -11,6 +11,7 @@ export default function Profile() {
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = React.useState(false);
   const [editingLot, setEditingLot] = React.useState(null);
+  const [lots, setLots] = React.useState(lotData);
 
   const handleLogoutClick = () => {
     handleLogout();
@@ -18,19 +19,21 @@ export default function Profile() {
   };
 
   const handleEditLot = (lot) => {
-    setEditingLot(lot);
+    setEditingLot({ ...lot });
     setShowEditModal(true);
   };
 
   const handleSaveEditedLot = (e) => {
     e.preventDefault();
-    console.log("Edited lot:", editingLot);
+    const updatedLots = lots.map((lot) =>
+      lot.id === editingLot.id ? editingLot : lot
+    );
+    setLots(updatedLots);
     setShowEditModal(false);
+    setEditingLot(null);
   };
 
-  const userLots = lotData.filter(
-    (lot) => lot.username === currentUser.username
-  );
+  const userLots = lots.filter((lot) => lot.username === currentUser.username);
 
   return (
     <section className="p-10 space-y-4">
