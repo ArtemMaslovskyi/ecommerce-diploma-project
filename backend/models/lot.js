@@ -27,7 +27,7 @@ const lotSchema = new Schema( {
   }
 }, { versionKey: false, timestamps: true });
 
-contactSchema.post("save", handleMongooseError);
+lotSchema.post("save", handleMongooseError);
 
 const addSchema = Joi.object({
   title: Joi.string().required(),
