@@ -1,5 +1,5 @@
 const {Lot} = require("../models/lot");
-const { HttpsError, ctrlWrapper } = require("../error_handler");
+const { HttpsError, ctrlWrapper, handleMongooseError } = require("../error_handler");
 const gravatar = require("gravatar");
 const path = require ("path");
 const fs = require("fs");

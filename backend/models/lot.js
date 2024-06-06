@@ -1,6 +1,6 @@
 const {Schema, model} = require("mongoose");
 const Joi = require("joi");
-const {handleMongooseError} = require("../error_handler");
+const { handleMongooseError } = require("../error_handler");
 
 const lotSchema = new Schema( {
   title: {

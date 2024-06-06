@@ -16,8 +16,6 @@ router.get("/current", authenticate, ctrl.getCurrent);
 
 router.post("/logout", authenticate, ctrl.logout);
 
-router.patch("/", authenticate, validateBody(schemas.subscriptionSchema),  ctrl.subscription);
-
 router.patch("/avatars", authenticate, upload.single("avatar"), avatarSize, ctrl.updateAvatar);
 
 router.get("/verify/:verificationCode", ctrl.emailVerification);
