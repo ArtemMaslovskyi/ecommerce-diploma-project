@@ -16,7 +16,7 @@ router.put("/:id", authenticate, isValidId, validateBody(schemas.changeSchema), 
 
 router.delete("/:id", authenticate, isValidId, ctrl.removeLot);
 
-router.patch("/:id/favorite", authenticate, isValidId, validateBody(schemas.schemaUpdateFavorite), ctrl.updateFavoriteContact);
+router.patch("/:id/favorite", authenticate, isValidId, validateBody(schemas.schemaUpdateFavorite), ctrl.updateFavoriteLot);
 
 router.patch("/avatars", authenticate, upload.single("avatar"), avatarSize, ctrl.updateLotAvatar);
 
