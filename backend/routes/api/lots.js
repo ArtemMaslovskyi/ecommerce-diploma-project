@@ -1,7 +1,7 @@
 const express = require('express');
 const ctrl = require("../../controllers/lots");
 
-const {validateBody, isValidId, authenticate, avatarSize} = require("../../middlewares");
+const {validateBody, isValidId, authenticate, avatarSize, upload} = require("../../middlewares");
 
 const {schemas} = require("../../models/lot");
 const router = express.Router();
