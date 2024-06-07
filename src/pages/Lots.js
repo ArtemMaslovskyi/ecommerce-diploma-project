@@ -1,7 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "flowbite-react";
 import { CiImport } from "react-icons/ci";
-import lotData from "./lotData";
 import { getPaginationRange } from "./pagination";
 import { useAuth } from "../AuthContext";
 
@@ -11,7 +10,7 @@ export default function Lots() {
   const [selectedLot, setSelectedLot] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const lotsPerPage = 10;
-  const [lots, setLots] = useState(lotData);
+  const [lots, setLots] = useState([]);
   const { isLoggedIn } = useAuth();
   const [error, setError] = useState("");
 
@@ -22,6 +21,20 @@ export default function Lots() {
     date: "",
     image: "",
   });
+
+  useEffect(() => {
+    const fetchLots = async () => {
+      try {
+        const response = await fetch("http://localhost:3001/api/lots/listLots");
+        const data = await response.json();
+        setLots(data);
+      } catch (error) {
+        console.error("Error fetching lots:", error);
+      }
+    };
+
+    fetchLots();
+  }, []);
 
   const handleMoreInfo = (lot) => {
     setSelectedLot(lot);
@@ -103,14 +116,14 @@ export default function Lots() {
           <div className="flex p-2" key={index}>
             <div className="w-32 h-32 bg-white rounded-lg">
               <img
-                src={lot.image}
-                alt={lot.name}
+                src={lot.avatarURL}
+                alt={lot.title}
                 className="object-cover w-full h-full rounded-lg"
               />
             </div>
             <div className="flex flex-col justify-between gap-1 mx-6 border-b-2 border-white border-opacity-70">
               <div className="flex items-center justify-between gap-4">
-                <p className="text-2xl font-bold">{lot.name}</p>
+                <p className="text-2xl font-bold">{lot.title}</p>
                 <button
                   className="p-2 border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
                   onClick={() => handleMoreInfo(lot)}
@@ -137,8 +150,8 @@ export default function Lots() {
               <div className="grid grid-cols-2 gap-3">
                 <div className="bg-white aspect-square w-[300px] rounded-sm">
                   <img
-                    src={selectedLot.image}
-                    alt={selectedLot.name}
+                    src={selectedLot.avatarURL}
+                    alt={selectedLot.title}
                     className="object-cover w-full h-full rounded-sm"
                   />
                 </div>

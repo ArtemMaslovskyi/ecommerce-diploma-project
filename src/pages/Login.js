@@ -5,7 +5,6 @@ import { AuthContext } from "../AuthContext";
 export default function Login() {
   const navigate = useNavigate();
   const { handleLogin } = useContext(AuthContext);
-  const { setIsLoggedIn } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -14,13 +13,18 @@ export default function Login() {
     navigate("/register");
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (handleLogin(email, password)) {
-      setIsLoggedIn(true);
-      navigate("/Profile");
-    } else {
-      setError("Invalid email or password");
+    try {
+      const response = await handleLogin(email, password);
+      console.log("Login response:", response);
+      if (response.token) {
+        navigate("/Profile");
+      } else {
+        setError("Invalid email or password");
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -31,20 +35,20 @@ export default function Login() {
         onSubmit={handleSubmit}
       >
         <div className="flex flex-col w-1/3 space-y-4">
-          <p className="">Email</p>
+          <p>Email</p>
           <input
             type="email"
             className="text-black"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-          ></input>
-          <p className="">Password</p>
+          />
+          <p>Password</p>
           <input
             type="password"
             className="text-black"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-          ></input>
+          />
           {error && <p className="text-red-500">{error}</p>}
         </div>
         <div className="space-x-4">

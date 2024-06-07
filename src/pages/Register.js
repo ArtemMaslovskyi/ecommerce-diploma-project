@@ -9,10 +9,10 @@ export default function Register() {
 
   const [formData, setFormData] = useState({
     email: "",
-    username: "",
+    name: "",
     password: "",
     confirmPassword: "",
-    avatar: null,
+    // avatar: null,
   });
 
   const [errors, setErrors] = useState({});
@@ -29,7 +29,7 @@ export default function Register() {
   const handleFileChange = (e) => {
     setFormData({
       ...formData,
-      avatar: e.target.files[0],
+      // avatar: e.target.files[0],
     });
   };
 
@@ -49,10 +49,9 @@ export default function Register() {
     if (validateForm()) {
       const newUser = {
         email: formData.email,
-        username: formData.username,
+        name: formData.name,
         password: formData.password,
-        info: "",
-        avatar: formData.avatar,
+        // avatar: formData.avatar,
       };
 
       try {
@@ -70,7 +69,7 @@ export default function Register() {
   };
 
   const handleRegister = async (newUser) => {
-    const data = await fetch("http://localhost:3001/register", {
+    const data = await fetch("http://localhost:3001/api/users/register", {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -105,9 +104,9 @@ export default function Register() {
           <p>Username</p>
           <input
             type="text"
-            name="username"
+            name="name"
             className="text-black"
-            value={formData.username}
+            value={formData.name}
             onChange={handleChange}
           />
           <p>Password</p>

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { MdPhotoCamera } from "react-icons/md";
 import { Modal } from "flowbite-react";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,12 +6,42 @@ import { AuthContext } from "../AuthContext";
 import lotData from "./lotData";
 
 export default function Profile() {
-  const { currentUser } = React.useContext(AuthContext);
-  const { handleLogout } = React.useContext(AuthContext);
+  const { currentUser, handleLogout } = React.useContext(AuthContext);
   const navigate = useNavigate();
-  const [showEditModal, setShowEditModal] = React.useState(false);
-  const [editingLot, setEditingLot] = React.useState(null);
-  const [lots, setLots] = React.useState(lotData);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingLot, setEditingLot] = useState(null);
+  const [lots, setLots] = useState(lotData);
+  const [userData, setUserData] = useState(null);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const token = currentUser?.token;
+        if (!token) return;
+
+        const response = await fetch("http://localhost:3001/api/users", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-auth-token": token,
+          },
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          setUserData(data);
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (error) {
+        console.error("Failed to fetch user data:", error);
+      }
+    };
+
+    fetchUserData();
+  }, [currentUser]);
+
+  // console.log("Current user in Profile:", currentUser);
 
   const handleLogoutClick = () => {
     handleLogout();
@@ -33,7 +63,11 @@ export default function Profile() {
     setEditingLot(null);
   };
 
-  const userLots = lots.filter((lot) => lot.username === currentUser.username);
+  if (!currentUser) {
+    return <div>Loading...</div>;
+  }
+
+  const userLots = lots.filter((lot) => lot.name === currentUser.name);
 
   return (
     <section className="p-10 space-y-4">
@@ -44,7 +78,7 @@ export default function Profile() {
         </div>
         <div className="space-y-6">
           <div className="flex space-x-4 *:font-bold *:text-3xl">
-            <p>{currentUser.username}</p>
+            <p>{currentUser.name}</p>
           </div>
           <p>Info: {currentUser.info}</p>
           <div className="space-x-4">
