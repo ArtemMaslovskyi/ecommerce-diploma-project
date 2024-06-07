@@ -27,12 +27,15 @@ export default function Lots() {
       try {
         const response = await fetch("http://localhost:3001/api/lots/listLots");
         const data = await response.json();
-        setLots(data);
+        if (Array.isArray(data)) {
+          setLots(data);
+        } else {
+          console.error("API did not return an array of lots");
+        }
       } catch (error) {
         console.error("Error fetching lots:", error);
       }
     };
-
     fetchLots();
   }, []);
 
