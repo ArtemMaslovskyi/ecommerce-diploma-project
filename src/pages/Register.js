@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../AuthContext";
 
 export default function Register() {
-  const { handleRegister } = useContext(AuthContext);
+  // const { handleRegister } = useContext(AuthContext);
   const { setIsLoggedIn } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -44,7 +44,7 @@ export default function Register() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
       const newUser = {
@@ -55,14 +55,36 @@ export default function Register() {
         avatar: formData.avatar,
       };
 
-      const result = handleRegister(newUser);
-      if (result.success) {
-        setIsLoggedIn(true);
-        navigate("/Profile");
-      } else {
-        setServerError(result.message);
+      try {
+        const response = await handleRegister(newUser);
+        if (response.success) {
+          setIsLoggedIn(true);
+          navigate("/Profile");
+        } else {
+          setServerError(response.message);
+        }
+      } catch (error) {
+        setServerError(error.message);
       }
     }
+  };
+
+  const handleRegister = async (newUser) => {
+    const data = await fetch("http://localhost:3001/register", {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      redirect: "follow",
+      referrerPolicy: "no-referrer",
+      body: JSON.stringify(newUser),
+    });
+
+    const response = await data.json();
+    return response;
   };
 
   return (
