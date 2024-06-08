@@ -22,6 +22,36 @@ export default function Lots() {
     image: "",
   });
 
+  const createLot = async (newLot) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/lots/addLot", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newLot),
+      });
+
+      if (!response.ok) {
+        console.log(await response.text());
+        throw new Error("Failed to create lot");
+      }
+
+      const createdLot = await response.json();
+      setLots((prevLots) => [...prevLots, createdLot]);
+      setNewLot({
+        name: "",
+        description: "",
+        price: "",
+        date: "",
+        image: "",
+      });
+      setOpenCreateMenu(false);
+    } catch (error) {
+      console.error("Error creating lot:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchLots = async () => {
       try {
@@ -81,17 +111,9 @@ export default function Lots() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    setLots((prevLots) => [
-      ...prevLots,
-      { ...newLot, category: "Uncategorized" },
-    ]);
-    setNewLot({
-      name: "",
-      description: "",
-      price: "",
-      date: "",
-      image: "",
+    createLot({
+      ...newLot,
+      category: "Uncategorized",
     });
     setOpenCreateMenu(false);
   };
