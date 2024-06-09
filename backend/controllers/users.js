@@ -26,16 +26,18 @@ const register = async(req, res)=> {
     const verifyEmail = {
         to: email,
         subject: "Verify email",
-        html: `<a target="_blank" href="${BASE_URL}/api/auth/verify/${verificationToken}">Click verify email</a>`
+        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`
     };
 
-    await emailSender(verifyEmail);
+    emailSender(verifyEmail);
 
     res.status(201).json({
         name: newUser.name,
         email: newUser.email,
     })
 }
+
+
 
 const emailVerification = async(req, res)=> {
     const {verificationToken} = req.params;
