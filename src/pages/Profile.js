@@ -12,6 +12,78 @@ export default function Profile() {
   const [editingLot, setEditingLot] = useState(null);
   const [lots, setLots] = useState(lotData);
   const [userData, setUserData] = useState(null);
+  const [showVerifyEmailButton, setShowVerifyEmailButton] = useState(false);
+
+  useEffect(() => {
+    const checkUserVerification = async () => {
+      try {
+        const token = currentUser?.token;
+        const response = await fetch("http://localhost:3001/api/users", {
+          headers: {
+            "x-auth-token": token,
+          },
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setShowVerifyEmailButton(!data.verify);
+        } else {
+          throw new Error("Failed to check user verification status");
+        }
+      } catch (error) {
+        console.error("Failed to check user verification status:", error);
+      }
+    };
+
+    if (currentUser) {
+      checkUserVerification();
+    }
+  }, [currentUser]);
+
+  const handleSendVerificationEmail = async () => {
+    try {
+      const token = currentUser?.token;
+      const response = await fetch("http://localhost:3001/api/users/reverify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify({ email: currentUser.email }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to send verification email");
+      }
+
+      console.log("Verification email sent");
+    } catch (error) {
+      console.error("Failed to send verification email:", error);
+    }
+  };
+
+  const handleVerifyEmail = async (verificationToken) => {
+    try {
+      const response = await fetch(
+        `http://localhost:3001/api/users/verify/${verificationToken}`,
+        {
+          method: "GET",
+          headers: {
+            "x-auth-token": currentUser.token,
+          },
+        }
+      );
+
+      if (response.ok) {
+        setShowVerifyEmailButton(false);
+        console.log("Email verified successfully");
+      } else {
+        throw new Error("Failed to verify email");
+      }
+    } catch (error) {
+      console.error("Failed to verify email:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -82,7 +154,10 @@ export default function Profile() {
           </div>
           <p>Info: {currentUser.info}</p>
           <div className="space-x-4">
-            <button className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
+            <button
+              onClick={handleSendVerificationEmail}
+              className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
+            >
               Verify email
             </button>
             <Link to="/EditProfile">

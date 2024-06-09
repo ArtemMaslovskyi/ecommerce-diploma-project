@@ -5,6 +5,7 @@ import { getPaginationRange } from "./pagination";
 import { useAuth } from "../AuthContext";
 
 export default function Lots() {
+  const { currentUser } = useAuth();
   const [openModal, setOpenModal] = useState(false);
   const [openCreateMenu, setOpenCreateMenu] = useState(false);
   const [selectedLot, setSelectedLot] = useState(null);
@@ -23,17 +24,18 @@ export default function Lots() {
   });
 
   const createLot = async (newLot) => {
+    const userId = currentUser?.id;
+
     try {
       const response = await fetch("http://localhost:3001/api/lots/addLot", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(newLot),
+        body: JSON.stringify({ ...newLot, userId }),
       });
 
       if (!response.ok) {
-        console.log(await response.text());
         throw new Error("Failed to create lot");
       }
 
