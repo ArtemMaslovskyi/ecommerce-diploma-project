@@ -3,7 +3,7 @@ const { HttpsError, ctrlWrapper, handleMongooseError } = require("../error_handl
 const gravatar = require("gravatar");
 const path = require ("path");
 const fs = require("fs");
-const avatarDir = path.join(__dirname, '../', 'public', 'avatars');
+const picturesDir = path.join(__dirname,'../', 'public', 'pictures')
 const listLots = async (req, res) => {
     const {_id: owner} = req.user;
     const {page = 1, limit = 20} = req.query;
@@ -24,8 +24,8 @@ const getLotById = async (req, res) => {
 
 const addLot = async (req, res) => {
     const {_id: owner} = req.user;
-    const avatarURL = gravatar.url(owner.pictureURL);
-    const result = await Lot.create({...req.body, owner, avatarURL});
+    const pictureURL = gravatar.url(owner.pictureURL);
+    const result = await Lot.create({...req.body, owner, pictureURL});
     res.status(201).json(result);
 }
 
@@ -59,17 +59,17 @@ const updateFavoriteLot = async (req, res) => {
     }
     res.json(result);
 }
-const updateLotAvatar = async (req, res) => {
+const updateLotPicture = async (req, res) => {
     const { id } = req.params;
     const { path: tempUpload, originalname } = req.file;
     const filename = `${id}_${originalname}`;
-    const resultUpload = path.join(avatarDir, filename);
+    const resultUpload = path.join(picturesDir, filename);
     try {
         fs.renameSync(tempUpload, resultUpload);
-        const avatarURL = path.join('avatars', filename);
-        await Lot.findByIdAndUpdate(id, { avatarURL });
+        const pictureURL = path.join('pictures', filename);
+        await Lot.findByIdAndUpdate(id, { pictureURL });
         res.json({
-            avatarURL,
+            pictureURL,
         });
     } catch (error) {
         console.error(error);
@@ -83,5 +83,5 @@ module.exports = {
     updateLot: ctrlWrapper(updateLot),
     removeLot: ctrlWrapper(removeLot),
     updateFavoriteLot: ctrlWrapper(updateFavoriteLot),
-    updateLotAvatar: ctrlWrapper(updateLotAvatar)
+    updateLotPicture: ctrlWrapper(updateLotPicture)
 }
