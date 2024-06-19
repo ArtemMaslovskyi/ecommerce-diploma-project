@@ -3,11 +3,11 @@ require("dotenv").config();
 const { META_PASSWORD } = process.env;
 
 const nodemailerConfig = {
-    host: " smtp.gmail.com",
-    port:  587,
+    host: " smtp.meta.ua",
+    port:  465,
     secure: true, 
     auth: {
-        user: "throwingaway2024@gmail.com",
+        user: "walterhwhite_2024@meta.ua",
         pass: META_PASSWORD
     },
 };
@@ -17,7 +17,7 @@ const transport = nodemailer.createTransport(nodemailerConfig);
 const emailSender = data => {
     const email = { 
         ...data, 
-        from: "throwingaway2024@gmail.com" 
+        from: "walterhwhite_2024@meta.ua" 
     };
     return transport.sendMail(email)
         .then(info => {
