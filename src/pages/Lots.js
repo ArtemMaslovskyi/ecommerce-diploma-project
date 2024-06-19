@@ -25,6 +25,7 @@ export default function Lots() {
 
   const createLot = async (newLot) => {
     const userId = currentUser?.id;
+    const token = currentUser?.token;
 
     try {
       const response = await fetch("http://localhost:3001/api/lots/addLot", {
@@ -53,6 +54,9 @@ export default function Lots() {
       console.error("Error creating lot:", error);
     }
   };
+
+  // console.log(currentUser.token);
+  // console.log(currentUser._id);
 
   useEffect(() => {
     const fetchLots = async () => {

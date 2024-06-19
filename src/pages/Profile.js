@@ -103,6 +103,9 @@ export default function Profile() {
 
   const userLots = lots.filter((lot) => lot.name === currentUser.name);
 
+  console.log(toString(currentUser._id));
+  console.log(currentUser._id);
+
   return (
     <section className="p-10 space-y-4">
       <div className="grid grid-cols-2">
