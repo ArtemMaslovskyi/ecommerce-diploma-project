@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from "react";
+import React, { createContext, useContext, useState, useEffect } from "react";
 
 const AuthContext = createContext();
 
@@ -6,9 +6,17 @@ const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  useEffect(() => {
+    const storedUser = localStorage.getItem("currentUser");
+    if (storedUser) {
+      setCurrentUser(JSON.parse(storedUser));
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   const handleLogin = async (email, password) => {
     try {
-      const response = await fetch("http://localhost:3001/api/users/login", {
+      const response = await fetch("/api/users/login", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -17,8 +25,10 @@ const AuthProvider = ({ children }) => {
       });
       const data = await response.json();
       if (response.ok) {
-        setCurrentUser({ ...data.user, token: data.token });
+        const user = { ...data.user, token: data.token };
+        setCurrentUser(user);
         setIsLoggedIn(true);
+        localStorage.setItem("currentUser", JSON.stringify(user));
         return data;
       } else {
         throw new Error(data.message);
@@ -32,6 +42,7 @@ const AuthProvider = ({ children }) => {
   const handleLogout = () => {
     setCurrentUser(null);
     setIsLoggedIn(false);
+    localStorage.removeItem("currentUser");
   };
 
   return (
