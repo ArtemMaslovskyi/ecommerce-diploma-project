@@ -16,52 +16,62 @@ export default function Lots() {
   const [error, setError] = useState("");
 
   const [newLot, setNewLot] = useState({
-    name: "",
+    title: "",
     description: "",
     price: "",
-    date: "",
+    favorite: false,
     image: "",
   });
 
   const createLot = async (newLot) => {
-    const userId = currentUser?.id;
-    const token = currentUser?.token;
-
+    const userId = currentUser?._id;
     try {
-      const response = await fetch("http://localhost:3001/api/lots/addLot", {
+      if (!currentUser || !currentUser.token) {
+        throw new Error("User not authenticated");
+      }
+
+      const response = await fetch("http://localhost:3001/api/lots/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${currentUser.token}`,
         },
         body: JSON.stringify({ ...newLot, userId }),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create lot");
+        const errorData = await response.json();
+        console.error("Server response:", errorData);
+        throw new Error(
+          errorData.message || `HTTP error! status: ${response.status}`
+        );
       }
 
       const createdLot = await response.json();
       setLots((prevLots) => [...prevLots, createdLot]);
       setNewLot({
-        name: "",
+        title: "",
         description: "",
         price: "",
-        date: "",
+        favorite: false,
         image: "",
       });
       setOpenCreateMenu(false);
     } catch (error) {
-      console.error("Error creating lot:", error);
+      console.error("Full error object:", error);
+      setError(error.message);
     }
   };
 
   // console.log(currentUser.token);
   // console.log(currentUser._id);
+  // console.log(currentUser);
 
   useEffect(() => {
     const fetchLots = async () => {
       try {
         const response = await fetch("http://localhost:3001/api/");
+        const userID = currentUser._id;
         const data = await response.json();
         if (Array.isArray(data)) {
           setLots(data);
@@ -92,10 +102,15 @@ export default function Lots() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
     setNewLot((prevNewLot) => ({
       ...prevNewLot,
-      [name]: name === "price" ? parseFloat(value) : value,
+      [name]:
+        type === "radio"
+          ? value === "true"
+          : name === "price"
+          ? parseFloat(value)
+          : value,
     }));
   };
 
@@ -208,7 +223,7 @@ export default function Lots() {
         <Modal.Header className="uppercase bg-slate-900">
           Create your lot
         </Modal.Header>
-        <Modal.Body className="bg-slate-900 ">
+        <Modal.Body className="bg-slate-900">
           <div className="space-y-6">
             <div className="flex justify-between gap-3">
               <form onSubmit={handleSubmit}>
@@ -228,18 +243,18 @@ export default function Lots() {
                   <div className="space-y-2 w-[300px] bg-transparent border-t-0 border-b-2 border-x-0 text-white">
                     <input
                       type="text"
-                      placeholder="Enter your lot name"
-                      name="name"
-                      value={newLot.name}
+                      placeholder="Enter your lot title"
+                      name="title"
+                      value={newLot.title}
                       onChange={handleInputChange}
-                      className="text-black"
+                      className="w-full text-black"
                     />
                     <textarea
                       placeholder="Enter lot description"
                       name="description"
                       value={newLot.description}
                       onChange={handleInputChange}
-                      className="text-black"
+                      className="w-full text-black"
                     ></textarea>
                     <div className="flex items-center gap-2 mb-2 text-black bg-transparent border-t-0 border-b-2 border-x-0">
                       <input
@@ -248,15 +263,30 @@ export default function Lots() {
                         value={newLot.price}
                         onChange={handleInputChange}
                         placeholder="Price"
-                        className="w-[140px] text-black"
+                        className="w-full text-black"
                       />
-                      <input
-                        type="date"
-                        name="date"
-                        value={newLot.date}
-                        onChange={handleInputChange}
-                        className="w-[140px] text-black"
-                      />
+                    </div>
+                    <div className="flex items-center gap-2 text-white">
+                      <label>
+                        <input
+                          type="radio"
+                          name="favorite"
+                          value="true"
+                          checked={newLot.favorite === true}
+                          onChange={handleInputChange}
+                        />
+                        Favorite
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          name="favorite"
+                          value="false"
+                          checked={newLot.favorite === false}
+                          onChange={handleInputChange}
+                        />
+                        Not Favorite
+                      </label>
                     </div>
                   </div>
                 </div>
