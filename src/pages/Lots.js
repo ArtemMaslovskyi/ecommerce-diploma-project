@@ -61,7 +61,7 @@ export default function Lots() {
   useEffect(() => {
     const fetchLots = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/lots");
+        const response = await fetch("http://localhost:3001/api/");
         const data = await response.json();
         if (Array.isArray(data)) {
           setLots(data);

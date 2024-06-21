@@ -56,17 +56,14 @@ export default function Profile() {
         throw new Error("User email is missing");
       }
 
-      const response = await fetch(
-        "http://localhost:3001/api/users/emailVerification",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-auth-token": token,
-          },
-          body: JSON.stringify({ email }),
-        }
-      );
+      const response = await fetch("http://localhost:3001/api/users/verify", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-auth-token": token,
+        },
+        body: JSON.stringify({ email }),
+      });
 
       if (!response.ok) {
         throw new Error("Failed to send verification email");
@@ -103,15 +100,20 @@ export default function Profile() {
 
   const userLots = lots.filter((lot) => lot.name === currentUser.name);
 
-  console.log(toString(currentUser._id));
-  console.log(currentUser._id);
+  // console.log(toString(currentUser._id));
+  // console.log(currentUser._id);
+  console.log(currentUser);
 
   return (
-    <section className="p-10 space-y-4">
+    <section className="h-screen p-10 space-y-4">
       <div className="grid grid-cols-2">
         {/*main div*/}
-        <div className="flex items-center justify-center bg-white rounded-full size-52">
-          <MdPhotoCamera color="black" size={80} />
+        <div className="flex items-center justify-center bg-white rounded-full *:rounded-full size-52">
+          <img
+            className="w-[90%]"
+            src={currentUser.avatarURL}
+            alt="userAvatar"
+          ></img>{" "}
         </div>
         <div className="space-y-6">
           <div className="flex space-x-4 *:font-bold *:text-3xl">
