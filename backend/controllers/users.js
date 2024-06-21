@@ -10,31 +10,50 @@ const {SECRET_KEY} = process.env;
 const {BASE_URL} = process.env;
 const avatarDir = path.join(__dirname, '../', 'public', 'avatars');
 
-const register = async(req, res)=> {
-    const {email, password} = req.body;
-    const user = await User.findOne({email});
+const register = async (req, res)=> {
+    try {
+        // Check if the email already exists
+        const existingUser = await User.findOne({ email: req.body.email });
+        if (existingUser) {
+            return res.status(400).json({ error: 'Email already exists' });
+        }
 
-    if(user){
-        throw HttpsError(409, "Email already in use");
+        // Hash the password
+        const hashedPassword = await bcrypt.hash(req.body.password, 10);
+        const avatarURL = gravatar.url(req.body.email);
+        const verificationToken = nanoid();
+        // Create a new user
+        const newUser = new User({
+            name: req.body.name,
+            email: req.body.email,
+            password: hashedPassword,
+            avatarURL,
+            verificationToken
+        });
+        
+        await newUser.save();
+
+        const verifyEmail = {
+            to: req.body.email,
+            subject: "Verify email",
+            html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`
+        };
+          // emailSender(verifyEmail);
+        const payload = {
+            user: newUser,
     }
+        const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "23h"});
+        await User.findByIdAndUpdate(newUser._id, {token});
+      
+        
+        res.status(201).json({
+            token, newUser
+        })
 
-    const hashPassword = await bcrypt.hash(password, 10);
-    const avatarURL = gravatar.url(email);
-    const verificationToken = nanoid();
-    const newUser = await User.create({...req.body, password: hashPassword, avatarURL, verificationToken});
-
-    const verifyEmail = {
-        to: email,
-        subject: "Verify email",
-        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`
-    };
-
-    emailSender(verifyEmail);
-
-    res.status(201).json({
-        name: newUser.name,
-        email: newUser.email,
-    })
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+    
 }
 
 
@@ -53,25 +72,26 @@ const emailVerification = async(req, res)=> {
 }
 
 const login = async(req, res)=> {
-    const {email, password} = req.body;
-    const user = await User.findOne({email});
-    if(!user){
-        throw HttpsError(401, "Email or password is wrong!");
-    }
-    const passwordCompare = await bcrypt.compare(password, user.password);
-    if(!passwordCompare) {
-        throw HttpsError(401, "Email or password is wrong!");
-    }
+    try{
+        const {email, password} = req.body;
+        const user = await User.findOne({email});
+        if(!user){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+         const passwordCompare = await bcrypt.compare(password, user.password);
 
-    const payload = {
-        id: user._id,
+         if(!passwordCompare){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        const payload = {
+                user: user,
+        }
+        const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "23h"});
+        await User.findByIdAndUpdate(user._id, {token});
+        res.status(200).json({ token, user});
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
     }
-
-    const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "23h"});
-    await User.findByIdAndUpdate(user._id, {token});
-    res.json({
-        token,
-    })
 }
 
 const reVerify = async(req, res)=> {
