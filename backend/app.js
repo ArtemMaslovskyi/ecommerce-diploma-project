@@ -1,6 +1,6 @@
 const express = require('express');
 const logger = require('morgan');
-const cors = require('cors');
+// const cors = require('cors');
 require("dotenv").config();
 const loginRouter = require("./routes/api/users");
 const lotsRouter = require('./routes/api/lots');
@@ -10,7 +10,7 @@ const app = express()
 const formatsLogger = app.get('env') === 'development' ? 'dev' : 'short'
 
 app.use(logger(formatsLogger))
-app.use(cors())
+// app.use(cors())
 app.use(express.json())
 app.use(express.static("public"))
 app.use('/api/lots', lotsRouter);
