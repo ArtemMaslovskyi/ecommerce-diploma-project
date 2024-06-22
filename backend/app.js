@@ -13,7 +13,7 @@ app.use(logger(formatsLogger));
 app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
-app.use("/api/lots", lotsRouter);
+app.use("/api/lots/", lotsRouter);
 app.use("/api/users", loginRouter);
 
 app.use((req, res) => {

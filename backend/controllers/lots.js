@@ -1,9 +1,5 @@
 const { Lot } = require("../models/lot");
-const {
-  HttpsError,
-  ctrlWrapper,
-  handleMongooseError,
-} = require("../error_handler");
+const { HttpsError, ctrlWrapper} = require("../error_handler");
 const gravatar = require("gravatar");
 const path = require("path");
 const fs = require("fs");
@@ -31,8 +27,8 @@ const getLotById = async (req, res) => {
 
 const addLot = async (req, res) => {
   const { _id: owner } = req.user;
-  // const pictureURL = gravatar.url(owner.pictureURL);
-  const result = await Lot.create({ ...req.body, owner /*pictureURL*/ });
+  const pictureURL = gravatar.url(owner.pictureURL);
+  const result = await Lot.create({ ...req.body, owner, pictureURL });
   res.status(201).json(result);
 };
 
@@ -61,6 +57,7 @@ const removeLot = async (req, res) => {
     message: "Delete success",
   });
 };
+
 const updateFavoriteLot = async (req, res) => {
   const { id } = req.params;
   const { _id: owner } = req.user;
@@ -74,6 +71,7 @@ const updateFavoriteLot = async (req, res) => {
   }
   res.json(result);
 };
+
 const updateLotPicture = async (req, res) => {
   const { id } = req.params;
   const { path: tempUpload, originalname } = req.file;
