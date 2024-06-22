@@ -24,7 +24,7 @@ const getLotById = async (req, res) => {
 
 const addLot = async (req, res) => {
     const {_id: owner} = req.user;
-    const pictureURL = gravatar.url(owner.pictureURL);
+    // const pictureURL = gravatar.url(owner.pictureURL);
     const result = await Lot.create({...req.body, owner, pictureURL});
     res.status(201).json(result);
 }
@@ -59,23 +59,23 @@ const updateFavoriteLot = async (req, res) => {
     }
     res.json(result);
 }
-const updateLotPicture = async (req, res) => {
-    const { id } = req.params;
-    const { path: tempUpload, originalname } = req.file;
-    const filename = `${id}_${originalname}`;
-    const resultUpload = path.join(picturesDir, filename);
-    try {
-        fs.renameSync(tempUpload, resultUpload);
-        const pictureURL = path.join('pictures', filename);
-        await Lot.findByIdAndUpdate(id, { pictureURL });
-        res.json({
-            pictureURL,
-        });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Internal Server Error' });
-    }
-};
+// const updateLotPicture = async (req, res) => {
+//     const { id } = req.params;
+//     const { path: tempUpload, originalname } = req.file;
+//     const filename = `${id}_${originalname}`;
+//     const resultUpload = path.join(picturesDir, filename);
+//     try {
+//         fs.renameSync(tempUpload, resultUpload);
+//         const pictureURL = path.join('pictures', filename);
+//         await Lot.findByIdAndUpdate(id, { pictureURL });
+//         res.json({
+//             pictureURL,
+//         });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//     }
+// };
 module.exports = {
     listLots: ctrlWrapper(listLots),
     getLotById: ctrlWrapper(getLotById),
@@ -83,5 +83,5 @@ module.exports = {
     updateLot: ctrlWrapper(updateLot),
     removeLot: ctrlWrapper(removeLot),
     updateFavoriteLot: ctrlWrapper(updateFavoriteLot),
-    updateLotPicture: ctrlWrapper(updateLotPicture)
+    // updateLotPicture: ctrlWrapper(updateLotPicture)
 }

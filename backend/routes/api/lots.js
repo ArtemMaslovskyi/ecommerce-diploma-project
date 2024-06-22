@@ -18,7 +18,7 @@ router.delete("/:id", authenticate, isValidId, ctrl.removeLot);
 
 router.patch("/:id/favorite", authenticate, isValidId, validateBody(schemas.schemaUpdateFavorite), ctrl.updateFavoriteLot);
 
-router.patch("/pictures", authenticate, upload.single("picture"), avatarSize, ctrl.updateLotPicture);
+// router.patch("/pictures", authenticate, upload.single("picture"), avatarSize, ctrl.updateLotPicture);
 
 console.log("I am running!");
 module.exports = router;
