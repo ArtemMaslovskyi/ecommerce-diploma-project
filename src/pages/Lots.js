@@ -20,24 +20,29 @@ export default function Lots() {
     description: "",
     price: "",
     favorite: false,
-    image: "",
+    // image: "",
   });
 
   const createLot = async (newLot) => {
-    const userId = currentUser?._id;
     try {
       if (!currentUser || !currentUser.token) {
         throw new Error("User not authenticated");
       }
 
-      const response = await fetch("http://localhost:3001/api/lots/", {
+      const requestOptions = {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${currentUser.token}`,
         },
-        body: JSON.stringify({ ...newLot, userId }),
-      });
+        body: JSON.stringify(newLot),
+        redirect: "follow",
+      };
+
+      const response = await fetch(
+        "http://localhost:3001/api/lots/",
+        requestOptions
+      );
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -54,7 +59,7 @@ export default function Lots() {
         description: "",
         price: "",
         favorite: false,
-        image: "",
+        // image: "",
       });
       setOpenCreateMenu(false);
     } catch (error) {
@@ -132,11 +137,11 @@ export default function Lots() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createLot({
-      ...newLot,
-      category: "Uncategorized",
-    });
-    setOpenCreateMenu(false);
+    if (!newLot.title || !newLot.price) {
+      setError("Title and price are required");
+      return;
+    }
+    createLot(newLot);
   };
 
   const handleCreateClick = () => {
@@ -228,7 +233,7 @@ export default function Lots() {
             <div className="flex justify-between gap-3">
               <form onSubmit={handleSubmit}>
                 <div className="flex justify-between gap-3">
-                  <label htmlFor="file-upload">
+                  {/*<label htmlFor="file-upload">
                     <input
                       id="file-upload"
                       type="file"
@@ -239,7 +244,7 @@ export default function Lots() {
                     <div className="flex items-center justify-center bg-white rounded-md cursor-pointer size-48">
                       <CiImport size={"160px"} />
                     </div>
-                  </label>
+                  </label>*/}
                   <div className="space-y-2 w-[300px] bg-transparent border-t-0 border-b-2 border-x-0 text-white">
                     <input
                       type="text"
