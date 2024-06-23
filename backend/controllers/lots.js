@@ -26,17 +26,19 @@ const getLotById = async (req, res) => {
 };
 
 const addLot = async (req, res) => {
-  const { _id: owner } = req.user;
-  const pictureURL = gravatar.url(owner.pictureURL);
-  const result = await Lot.create({ ...req.body, owner, pictureURL });
-  res.status(201).json(result);
-};
+  const { userId  } = req.user;
+  console.log('addLot',  req.user)
+  // const pictureURL = gravatar.url(owner.pictureURL);
+  const result = await Lot.create({ ...req.body, owner: userId });
+  console.log('addLot result',  result)
+  res.status(200).json(result);
+}
 
 const updateLot = async (req, res) => {
   const { id } = req.params;
   const { _id: owner } = req.user;
   const result = await Lot.findOneAndUpdate(
-    { $and: [{ _id: id }, { owner }] },
+    { $and: [{ _id: id }, { owner }] }, 
     req.body,
     { new: true }
   );

@@ -1,42 +1,75 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
-
+import axios from 'axios'
+import React, { createContext, useContext, useEffect, useMemo, useState } from "react"
 const AuthContext = createContext();
-
 const AuthProvider = ({ children }) => {
+  const [token, setToken_] = useState(localStorage.getItem("token"));
   const [currentUser, setCurrentUser] = useState(null);
+  const [serverError, setServerError] = useState('');
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("currentUser");
+    const storedUser = localStorage.getItem("user");
+    
     if (storedUser) {
       setCurrentUser(JSON.parse(storedUser));
       setIsLoggedIn(true);
     }
   }, []);
 
-  const handleLogin = async (email, password) => {
-    try {
-      const response = await fetch("/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-      const data = await response.json();
-      if (response.ok) {
-        const user = { ...data.user, token: data.token };
-        setCurrentUser(user);
-        setIsLoggedIn(true);
-        localStorage.setItem("currentUser", JSON.stringify(user));
-        return data;
-      } else {
-        throw new Error(data.message);
-      }
-    } catch (error) {
-      // console.error("Login failed:", error);
-      throw error;
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = "Bearer " + token;
+      localStorage.setItem('token',token);
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+      localStorage.removeItem('token')
     }
+  }, [token]);
+
+  const setToken = (newToken) => {
+    setToken_(newToken);
+  };
+  const handleLogin = async (email, password, callback) => {
+    axios.post('/api/users/login', { email, password })
+    .then(({data}) => {
+    console.log(data)
+     if(data?.user){
+      setCurrentUser(data?.user)
+        localStorage.setItem("user", JSON.stringify(data?.user));
+      }
+      if(data?.token){
+        localStorage.setItem("token", data?.token);
+        setIsLoggedIn(true);
+        callback && callback()
+      }
+    })
+    .catch((error) => {
+      error?.response?.data?.error && setServerError(error?.response.data.error)
+      console.error(error)
+    })
+
+   
+  };
+
+  const handleRegister = async (newUser, callback) => {
+    axios.post('/api/users/register', newUser)
+    .then(({data}) => {
+      console.log(data)
+      if(data?.user){
+        setCurrentUser(data?.user)
+        localStorage.setItem("user", JSON.stringify(data?.user));
+      }
+      if(data?.token){
+        localStorage.setItem("token", data?.token);
+        setIsLoggedIn(true);
+        callback && callback()
+      }
+    })
+    .catch((error) => {
+      error?.response?.data?.error && setServerError(error?.response.data.error)
+      console.error(error)
+    })
+    
   };
 
   const handleLogout = () => {
@@ -45,15 +78,27 @@ const AuthProvider = ({ children }) => {
     localStorage.removeItem("currentUser");
   };
 
+  const contextValue = useMemo(
+  () => ({
+    token,
+    setToken,
+    handleRegister,
+    serverError,
+    setServerError,
+    currentUser,
+    isLoggedIn,
+    setIsLoggedIn,
+    handleLogin,
+    handleLogout,
+  }),
+  [token, serverError,
+currentUser,
+isLoggedIn]
+);
+
   return (
     <AuthContext.Provider
-      value={{
-        currentUser,
-        isLoggedIn,
-        setIsLoggedIn,
-        handleLogin,
-        handleLogout,
-      }}
+      value={contextValue}
     >
       {children}
     </AuthContext.Provider>
@@ -64,4 +109,5 @@ const useAuth = () => {
   return useContext(AuthContext);
 };
 
-export { AuthContext, AuthProvider, useAuth };
+export { AuthContext, AuthProvider, useAuth }
+

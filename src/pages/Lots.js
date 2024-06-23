@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Modal } from "flowbite-react";
-import { CiImport } from "react-icons/ci";
-import { getPaginationRange } from "./pagination";
-import { useAuth } from "../AuthContext";
-
+import axios from 'axios'
+import { Modal } from "flowbite-react"
+import React, { useEffect, useState } from "react"
+import { useAuth } from "../AuthContext"
+import { getPaginationRange } from "./pagination"
 export default function Lots() {
   const { currentUser } = useAuth();
   const [openModal, setOpenModal] = useState(false);
@@ -25,43 +24,35 @@ export default function Lots() {
 
   const createLot = async (newLot) => {
     try {
-      if (!currentUser || !currentUser.token) {
+      if (!currentUser) {
         throw new Error("User not authenticated");
       }
 
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${currentUser.token}`,
-        },
-        body: JSON.stringify(newLot),
-        redirect: "follow",
-      };
-
-      const response = await fetch(
-        "http://localhost:3001/api/lots/",
-        requestOptions
-      );
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        console.error("Server response:", errorData);
+      axios.post('/api/lots/create', newLot)
+      .then(resp => {
+        console.log(resp)
+        if(resp?.data){
+          setLots((prevLots) => [...prevLots, resp?.data]);
+          setNewLot({
+            title: "", 
+            description: "",
+            price: "",
+            favorite: false,
+            // image: "",
+          });
+          setOpenCreateMenu(false);
+        }
+      })
+      .catch((err) => {
+        console.error(err)
         throw new Error(
-          errorData.message || `HTTP error! status: ${response.status}`
+          `HTTP error! status: ${err?.response?.data?.error}`
         );
-      }
+      })
 
-      const createdLot = await response.json();
-      setLots((prevLots) => [...prevLots, createdLot]);
-      setNewLot({
-        title: "",
-        description: "",
-        price: "",
-        favorite: false,
-        // image: "",
-      });
-      setOpenCreateMenu(false);
+      
+      
+     
     } catch (error) {
       console.error("Full error object:", error);
       setError(error.message);

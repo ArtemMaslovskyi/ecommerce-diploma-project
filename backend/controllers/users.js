@@ -6,18 +6,39 @@ const fs = require("fs");
 const {User} = require("../models/user");
 const { HttpsError, ctrlWrapper, emailSender } = require("../error_handler");
 const {nanoid} = require("nanoid");
-const {SECRET_KEY} = process.env;
-const {BASE_URL} = process.env;
+const {BASE_URL, SECRET_KEY } = process.env;
 const avatarDir = path.join(__dirname, '../', 'public', 'avatars');
 
-const register = async (req, res)=> {
+const generateAccessToken = (username, userId) => {
+  console.log('generateAccessToken', username, userId, SECRET_KEY)
+  return jwt.sign(
+    {
+      userId,
+      username,
+    },
+    SECRET_KEY,
+    {
+      expiresIn: 60*60,
+    }
+  );
+};
+
+const verifyEmail = (email, verificationToken) => {
+     const verifyEmail = {
+        to: email,
+        subject: "Verify email",
+        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`
+    };
+    emailSender(verifyEmail);
+}
+
+const register = async (req, res) => {
     try {
         // Check if the email already exists
         const existingUser = await User.findOne({ email: req.body.email });
         if (existingUser) {
             return res.status(400).json({ error: 'Email already exists' });
         }
-
         // Hash the password
         const hashedPassword = await bcrypt.hash(req.body.password, 10);
         const avatarURL = gravatar.url(req.body.email);
@@ -32,36 +53,48 @@ const register = async (req, res)=> {
         });
         
         await newUser.save();
-
-        const verifyEmail = {
-            to: req.body.email,
-            subject: "Verify email",
-            html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${verificationToken}">Click verify email</a>`
-        };
-          // emailSender(verifyEmail);
-        const payload = {
-            user: newUser,
-    }
-        const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "23h"});
-        await User.findByIdAndUpdate(newUser._id, {token});
-      
+       
+        const token = generateAccessToken(newUser.name, newUser._id);
         
-        res.status(201).json({
-            token, newUser
+        return res.status(200).json({
+            token, user: newUser
         })
 
     } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ msg: 'Internal server error', error });
     }
-    
 }
 
-const emailVerification = async(req, res)=> {
+const login = async (req, res) => {
+    try{
+        const {email, password} = req.body;
+        const user = await User.findOne({email});
+
+        if(!user){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+
+        const passwordCompare = await bcrypt.compare(password, user.password);
+
+        if(!passwordCompare){
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+       
+        const token = generateAccessToken(user.name, user._id);
+        res.status(200).json({ token, user });
+    } catch (error) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+}
+
+const emailVerification = async (req, res) => {
     const {verificationToken} = req.params;
     const user = await User.findOne({verificationToken});
+
     if(!user){
         throw HttpsError(404, "User not found")
     }
+
     await User.findByIdAndUpdate(user._id, {verify: true, verificationToken: ""});
 
     res.json({
@@ -69,53 +102,30 @@ const emailVerification = async(req, res)=> {
     })
 }
 
-const login = async(req, res)=> {
-    try{
-        const {email, password} = req.body;
-        const user = await User.findOne({email});
-        if(!user){
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-         const passwordCompare = await bcrypt.compare(password, user.password);
-
-         if(!passwordCompare){
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-        const payload = {
-                user: user,
-        }
-        const token = jwt.sign(payload, SECRET_KEY, {expiresIn: "23h"});
-        await User.findByIdAndUpdate(user._id, {token});
-        res.status(200).json({ token, user});
-    } catch (error) {
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-const reVerify = async(req, res)=> {
+const reVerify = async (req, res) => {
     const {email} = req.body;
     const user = await User.findOne({email});
+    
+
     if(!user) {
         throw HttpsError(404, "User not found");
     }
+
     if(user.verify) {
         throw HttpsError(401, "Verification has already been passed");
     }
 
-    const verifyEmail = {
-        to: email,
-        subject: "Verify email",
-        html: `<a target="_blank" href="${BASE_URL}/api/users/verify/${user.verificationToken}">Click verify email</a>`
-    };
+    const verificationToken = nanoid();
+    await User.findByIdAndUpdate(user._id, {verificationToken});
 
-    await emailSender(verifyEmail);
+    verifyEmail(email, verificationToken)
 
     res.json({
         message: "Verification email sent"
     })
 }
 
-const getCurrent = async(req, res)=> {
+const getCurrent = async (req, res) => {
     const {email, name, _id} = req.user;
     res.json({
         email,
@@ -132,6 +142,7 @@ const logout = async(req, res) => {
         message: "Logout success"
     })
 }
+
 const updateAvatar = async (req, res) => {
     const { _id } = req.user;
     const { path: tempUpload, originalname } = req.file;
@@ -141,7 +152,7 @@ const updateAvatar = async (req, res) => {
         fs.renameSync(tempUpload, resultUpload);
         const avatarURL = path.join('avatars', filename);
         await User.findByIdAndUpdate(_id, { avatarURL });
-        res.json({
+        res.status(200).json({
             avatarURL,
         });
     } catch (error) {

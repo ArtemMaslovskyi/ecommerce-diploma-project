@@ -22,7 +22,7 @@ const userSchema = new Schema({
         type: String,
         default: ""
     },
-       avatarURL:{
+    avatarURL:{
         type: String,
         required: [true, 'Avatar is required']
     },
@@ -48,6 +48,7 @@ const loginSchema = Joi.object({
     email: Joi.string().pattern(emailFormat).required(),
     password: Joi.string().min(6).required(),
 });
+
 const emailVerifySchema = Joi.object({
     email: Joi.string().pattern(emailFormat).required(),
 });

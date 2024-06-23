@@ -1,31 +1,24 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import React, { useContext, useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { AuthContext } from "../AuthContext"
 
 export default function Login() {
   const navigate = useNavigate();
-  const { handleLogin } = useContext(AuthContext);
+  const { handleLogin, serverError, setServerError } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
   const handleRegisterClick = () => {
-    navigate("/register");
+    navigate("/register", { replace: true });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await handleLogin(email, password);
-      console.log("Login response:", response);
-      if (response.token) {
-        navigate("/Profile");
-      } else {
-        setError("Invalid email or password");
-      }
-    } catch (err) {
-      setError(err.message);
-    }
+    setServerError('')
+    handleLogin(email, password, () => {
+      navigate("/Profile", { replace: true });
+    })
   };
 
   return (
@@ -36,7 +29,7 @@ export default function Login() {
       >
         <div className="flex flex-col w-1/3 space-y-4">
           <p>Email</p>
-          <input
+          <input 
             type="email"
             className="text-black"
             value={email}
@@ -49,7 +42,7 @@ export default function Login() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          {error && <p className="text-red-500">{error}</p>}
+          {serverError && <p className="text-red-500">{serverError}</p>}
         </div>
         <div className="space-x-4">
           <button

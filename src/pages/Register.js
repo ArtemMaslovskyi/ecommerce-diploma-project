@@ -1,11 +1,13 @@
-import React, { useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
+import React, { useContext, useState } from "react"
+
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from "../AuthContext"
+
 
 export default function Register() {
   // const { handleRegister } = useContext(AuthContext);
-  const { setIsLoggedIn } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { setIsLoggedIn, handleRegister, serverError, setServerError } = useContext(AuthContext);
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -16,7 +18,6 @@ export default function Register() {
   });
 
   const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState("");
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -47,44 +48,18 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (validateForm()) {
-      const newUser = {
-        email: formData.email,
-        name: formData.name,
-        password: formData.password,
-        // avatar: formData.avatar,
-      };
-
-      try {
-        const response = await handleRegister(newUser);
-        if (response.success) {
-          setIsLoggedIn(true);
-          navigate("/Profile");
-        } else {
-          setServerError(response.message);
-        }
-      } catch (error) {
-        setServerError(error.message);
-      }
+        handleRegister({
+          email: formData.email,
+          name: formData.name,
+          password: formData.password,
+          // avatar: formData.avatar,
+        }, () => {
+          navigate("/register", { replace: true });
+        });
     }
   };
 
-  const handleRegister = async (newUser) => {
-    const data = await fetch("http://localhost:3001/api/users/register", {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      redirect: "follow",
-      referrerPolicy: "no-referrer",
-      body: JSON.stringify(newUser),
-    });
 
-    const response = await data.json();
-    return response;
-  };
 
   return (
     <section className="p-10 h-[800px]">

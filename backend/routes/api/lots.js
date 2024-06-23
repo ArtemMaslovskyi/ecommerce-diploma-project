@@ -1,16 +1,15 @@
-const express = require('express');
+const router = require('express').Router();
 const ctrl = require("../../controllers/lots");
 
 const {validateBody, isValidId, authenticate, avatarSize, upload} = require("../../middlewares");
 
 const {schemas} = require("../../models/lot");
-const router = express.Router();
 
-router.get("/", authenticate, ctrl.listLots);
+router.get("/list", authenticate, ctrl.listLots);
 
 router.get("/:id", authenticate, isValidId, ctrl.getLotById);
 
-router.post("/", authenticate, validateBody(schemas.addSchema), ctrl.addLot);
+router.post("/create", authenticate, validateBody(schemas.addSchema), ctrl.addLot);
 
 router.put("/:id", authenticate, isValidId, validateBody(schemas.changeSchema), ctrl.updateLot);
 
@@ -20,5 +19,5 @@ router.patch("/:id/favorite", authenticate, isValidId, validateBody(schemas.sche
 
 router.patch("/pictures", authenticate, upload.single("picture"), avatarSize, ctrl.updateLotPicture);
 
-console.log("I am running!");
-module.exports = router;
+console.log("Lots running!");
+module.exports = router; 

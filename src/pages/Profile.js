@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
-import { MdPhotoCamera } from "react-icons/md";
-import { Modal } from "flowbite-react";
-import { Link, useNavigate } from "react-router-dom";
-import { AuthContext } from "../AuthContext";
-import lotData from "./lotData";
+import { Modal } from "flowbite-react"
+import React, { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { AuthContext } from "../AuthContext"
+import lotData from "./lotData"
 
 export default function Profile() {
   const { currentUser, handleLogout } = React.useContext(AuthContext);
@@ -76,7 +75,7 @@ export default function Profile() {
   };
   const handleLogoutClick = () => {
     handleLogout();
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const handleEditLot = (lot) => {
