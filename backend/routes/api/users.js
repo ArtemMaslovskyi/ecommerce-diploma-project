@@ -20,4 +20,6 @@ router.get("/verify/:verificationToken", ctrl.emailVerification);
 
 router.post("/verify", validateBody(schemas.emailVerifySchema), ctrl.reVerify);
 
+console.log("Users running!");
+
 module.exports = router;

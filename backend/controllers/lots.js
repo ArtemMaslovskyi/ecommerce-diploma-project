@@ -5,10 +5,10 @@ const path = require("path");
 const fs = require("fs");
 const picturesDir = path.join(__dirname, "../", "public", "pictures");
 const listLots = async (req, res) => {
-  const { _id: owner } = req.user;
+  const { userId  } = req.user;
   const { page = 1, limit = 20 } = req.query;
   const skip = (page - 1) * limit;
-  const result = await Lot.find({ owner }, "-createdAt -updatedAt", {
+  const result = await Lot.find({ userId }, "-createdAt -updatedAt", {
     skip,
     limit,
   }).populate("owner", "title price");
@@ -17,8 +17,8 @@ const listLots = async (req, res) => {
 
 const getLotById = async (req, res) => {
   const { id } = req.params;
-  const { _id: owner } = req.user;
-  const result = await Lot.findOne({ $and: [{ _id: id }, { owner }] });
+  const { userId  } = req.user;
+  const result = await Lot.findOne({ $and: [{ _id: id }, { userId }] });
   if (!result) {
     throw HttpsError(404, "Not found");
   }
@@ -36,9 +36,9 @@ const addLot = async (req, res) => {
 
 const updateLot = async (req, res) => {
   const { id } = req.params;
-  const { _id: owner } = req.user;
+  const { userId  } = req.user;
   const result = await Lot.findOneAndUpdate(
-    { $and: [{ _id: id }, { owner }] }, 
+    { $and: [{ _id: id }, {  userId }] }, 
     req.body,
     { new: true }
   );
@@ -50,8 +50,8 @@ const updateLot = async (req, res) => {
 
 const removeLot = async (req, res) => {
   const { id } = req.params;
-  const { _id: owner } = req.user;
-  const result = await Lot.findOneAndDelete({ $and: [{ _id: id }, { owner }] });
+  const { userId  } = req.user;
+  const result = await Lot.findOneAndDelete({ $and: [{ _id: id }, { userId }] });
   if (!result) {
     throw HttpsError(404, "Not found");
   }
@@ -62,9 +62,9 @@ const removeLot = async (req, res) => {
 
 const updateFavoriteLot = async (req, res) => {
   const { id } = req.params;
-  const { _id: owner } = req.user;
+  const { userId  } = req.user;
   const result = await Lot.findOneAndUpdate(
-    { $and: [{ _id: id }, { owner }] },
+    { $and: [{ _id: id }, { userId }] },
     req.body,
     { new: true }
   );
