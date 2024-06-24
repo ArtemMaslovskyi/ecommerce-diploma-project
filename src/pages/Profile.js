@@ -43,49 +43,42 @@ export default function Profile() {
     fetchUserData();
   }, [currentUser]);
 
-  useEffect(() => {
-    const fetchUserLots = async () => {
-      try {
-        console.log("Current user:", currentUser);
-        if (!currentUser || !currentUser._id) {
-          console.log("No user logged in or user ID not available");
-          return;
-        }
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
 
-        const response = await axios.get(
-          "http://localhost:3001/api/lots/list",
-          {
-            headers: {
-              "x-auth-token": currentUser.token,
-            },
-          }
-        );
-        const allLots = response.data;
-        console.log("All lots from API:", allLots);
+  const fetchLots = async () => {
+    try {
+      const token = getToken();
+      console.log("Token:", token);
 
-        if (Array.isArray(allLots)) {
-          console.log("Current user ID:", currentUser._id);
-          const userLots = allLots.filter((lot) => {
-            console.log(
-              "Lot owner:",
-              lot.owner._id,
-              "Current user _id:",
-              currentUser._id
-            );
-            return lot.owner === currentUser._id;
-          });
-          console.log("Filtered user lots:", userLots);
-          setLots(userLots);
-        } else {
-          console.error("API did not return an array of lots");
-        }
-      } catch (error) {
-        console.error("Error fetching lots:", error);
+      if (!token) {
+        throw new Error("No token found");
       }
-    };
 
-    fetchUserLots();
-  }, [currentUser]);
+      const response = await axios.get("http://localhost:3001/api/lots/list", {
+        headers: {
+          "x-auth-token": token,
+        },
+      });
+
+      const data = response.data;
+      console.log("Response data:", data);
+      if (Array.isArray(data)) {
+        setLots(data);
+      } else {
+        console.error("API did not return an array of lots");
+      }
+    } catch (error) {
+      console.error("Full error object:", error);
+      console.error("Error response:", error.response);
+      console.error("Error request:", error.request);
+    }
+  };
+
+  useEffect(() => {
+    fetchLots();
+  }, []);
 
   const handleSendVerificationEmail = async () => {
     try {

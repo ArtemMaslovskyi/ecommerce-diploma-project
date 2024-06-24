@@ -54,32 +54,44 @@ export default function Lots() {
     }
   };
 
-  console.log(currentUser.token);
+  // console.log(currentUser.token);
   // console.log(currentUser._id);
   // console.log(currentUser);
 
-  useEffect(() => {
-    const fetchLots = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:3001/api/lots/list",
-          {
-            headers: {
-              "x-auth-token": currentUser.token,
-            },
-          }
-        );
-        const data = response.data;
-        console.log(data);
-        if (Array.isArray(data)) {
-          setLots(data);
-        } else {
-          console.error("API did not return an array of lots");
-        }
-      } catch (error) {
-        console.error("Error fetching lots:", error);
+  const getToken = () => {
+    return localStorage.getItem("token");
+  };
+
+  const fetchLots = async () => {
+    try {
+      const token = getToken();
+      console.log("Token:", token);
+
+      if (!token) {
+        throw new Error("No token found");
       }
-    };
+
+      const response = await axios.get("http://localhost:3001/api/lots/list", {
+        headers: {
+          "x-auth-token": token,
+        },
+      });
+
+      const data = response.data;
+      console.log("Response data:", data);
+      if (Array.isArray(data)) {
+        setLots(data);
+      } else {
+        console.error("API did not return an array of lots");
+      }
+    } catch (error) {
+      console.error("Full error object:", error);
+      console.error("Error response:", error.response);
+      console.error("Error request:", error.request);
+    }
+  };
+
+  useEffect(() => {
     fetchLots();
   }, []);
 
@@ -177,7 +189,6 @@ export default function Lots() {
               </div>
               <p className="truncate opacity-90 w-[400px]">{lot.description}</p>
               <div className="flex justify-between gap-2 opacity-90">
-                <p>Category: {lot.category}</p>
                 <p>Price: {lot.price}</p>
               </div>
             </div>
