@@ -5,7 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const picturesDir = path.join(__dirname, "../", "public", "pictures");
 const listLots = async (req, res) => {
-  const { userId  } = req.user;
+  const { userId  } = req.body;
   const { page = 1, limit = 20 } = req.query;
   const skip = (page - 1) * limit;
   const result = await Lot.find({ userId }, "-createdAt -updatedAt", {
@@ -17,7 +17,7 @@ const listLots = async (req, res) => {
 
 const getLotById = async (req, res) => {
   const { id } = req.params;
-  const { userId  } = req.user;
+  const { userId  } = req.body;
   const result = await Lot.findOne({ $and: [{ _id: id }, { userId }] });
   if (!result) {
     throw HttpsError(404, "Not found");
@@ -26,8 +26,8 @@ const getLotById = async (req, res) => {
 };
 
 const addLot = async (req, res) => {
-  const { userId  } = req.user;
-  console.log('addLot',  req.user)
+  const { userId  } =  req.body;
+  console.log('addLot',  req.body)
   // const pictureURL = gravatar.url(owner.pictureURL);
   const result = await Lot.create({ ...req.body, owner: userId });
   console.log('addLot result',  result)
@@ -36,7 +36,7 @@ const addLot = async (req, res) => {
 
 const updateLot = async (req, res) => {
   const { id } = req.params;
-  const { userId  } = req.user;
+  const { userId  } =  req.body;
   const result = await Lot.findOneAndUpdate(
     { $and: [{ _id: id }, {  userId }] }, 
     req.body,
@@ -50,7 +50,7 @@ const updateLot = async (req, res) => {
 
 const removeLot = async (req, res) => {
   const { id } = req.params;
-  const { userId  } = req.user;
+  const { userId  } =  req.body;
   const result = await Lot.findOneAndDelete({ $and: [{ _id: id }, { userId }] });
   if (!result) {
     throw HttpsError(404, "Not found");
@@ -62,7 +62,7 @@ const removeLot = async (req, res) => {
 
 const updateFavoriteLot = async (req, res) => {
   const { id } = req.params;
-  const { userId  } = req.user;
+  const { userId  } =  req.body;
   const result = await Lot.findOneAndUpdate(
     { $and: [{ _id: id }, { userId }] },
     req.body,
