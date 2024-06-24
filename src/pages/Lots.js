@@ -54,14 +54,21 @@ export default function Lots() {
     }
   };
 
-  // console.log(currentUser.token);
+  console.log(currentUser.token);
   // console.log(currentUser._id);
   // console.log(currentUser);
 
   useEffect(() => {
     const fetchLots = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/api/lots/list");
+        const response = await axios.get(
+          "http://localhost:3001/api/lots/list",
+          {
+            headers: {
+              "x-auth-token": currentUser.token,
+            },
+          }
+        );
         const data = response.data;
         console.log(data);
         if (Array.isArray(data)) {
@@ -193,13 +200,9 @@ export default function Lots() {
                   />
                 </div>
                 <div className="grid justify-around w-full grid-cols-2 gap-2 text-center text-white">
-                  <div className="border-e-2">
+                  <div className="">
                     <h3>Price</h3>
                     <p>{selectedLot.price}</p>
-                  </div>
-                  <div>
-                    <h3>Date</h3>
-                    <p>{selectedLot.date}</p>
                   </div>
                 </div>
               </div>
