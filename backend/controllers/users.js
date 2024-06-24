@@ -11,7 +11,7 @@ const avatarDir = path.join(__dirname, "../", "public", "avatars");
 
 const generateAccessToken = (username, userId) => {
   console.log("generateAccessToken", username, userId, SECRET_KEY);
-  return jwt.sign({ userId, username }, SECRET_KEY, { expiresIn: 60 * 60 });
+  return jwt.sign({ userId, username }, SECRET_KEY, { expiresIn: "24h" });
 };
 
 const verifyEmail = (email, verificationToken) => {
