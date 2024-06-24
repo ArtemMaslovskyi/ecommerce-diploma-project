@@ -28,9 +28,9 @@ const getLotById = async (req, res) => {
 const addLot = async (req, res) => {
   const { userId  } =  req.body;
   console.log('addLot',  req.body)
-  // const pictureURL = gravatar.url(owner.pictureURL);
+  const pictureURL = gravatar.url(userId.pictureURL);
   const result = await Lot.create({ ...req.body, owner: userId });
-  console.log('addLot result',  result)
+  console.log('addLot result', result)
   res.status(200).json(result);
 }
 
