@@ -1,15 +1,15 @@
-import { Modal } from "flowbite-react"
-import React, { useEffect, useState } from "react"
-import { Link, useNavigate } from "react-router-dom"
-import { AuthContext } from "../AuthContext"
-import lotData from "./lotData"
+import { Modal } from "flowbite-react";
+import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AuthContext } from "../AuthContext";
 
 export default function Profile() {
   const { currentUser, handleLogout } = React.useContext(AuthContext);
   const navigate = useNavigate();
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingLot, setEditingLot] = useState(null);
-  const [lots, setLots] = useState(lotData);
+  const [lots, setLots] = useState([]);
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
@@ -41,6 +41,50 @@ export default function Profile() {
     };
 
     fetchUserData();
+  }, [currentUser]);
+
+  useEffect(() => {
+    const fetchUserLots = async () => {
+      try {
+        console.log("Current user:", currentUser);
+        if (!currentUser || !currentUser._id) {
+          console.log("No user logged in or user ID not available");
+          return;
+        }
+
+        const response = await axios.get(
+          "http://localhost:3001/api/lots/list",
+          {
+            headers: {
+              "x-auth-token": currentUser.token,
+            },
+          }
+        );
+        const allLots = response.data;
+        console.log("All lots from API:", allLots);
+
+        if (Array.isArray(allLots)) {
+          console.log("Current user ID:", currentUser._id);
+          const userLots = allLots.filter((lot) => {
+            console.log(
+              "Lot owner:",
+              lot.owner._id,
+              "Current user _id:",
+              currentUser._id
+            );
+            return lot.owner === currentUser._id;
+          });
+          console.log("Filtered user lots:", userLots);
+          setLots(userLots);
+        } else {
+          console.error("API did not return an array of lots");
+        }
+      } catch (error) {
+        console.error("Error fetching lots:", error);
+      }
+    };
+
+    fetchUserLots();
   }, [currentUser]);
 
   const handleSendVerificationEmail = async () => {
@@ -118,7 +162,7 @@ export default function Profile() {
           <div className="flex space-x-4 *:font-bold *:text-3xl">
             <p>{currentUser.name}</p>
           </div>
-          <p>Info: {currentUser.info}</p>
+          {/* {<p>Info: {currentUser.info}</p>} */}
           <div className="space-x-4">
             <button
               onClick={
@@ -130,11 +174,11 @@ export default function Profile() {
             >
               Verify email
             </button>
-            <Link to="/EditProfile">
+            {/* <Link to="/EditProfile">
               <button className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black">
                 Edit Profile
               </button>
-            </Link>
+            </Link> */}
             <button
               className="p-2 mt-4 text-lg duration-150 delay-75 border-2 rounded-md hover:bg-white hover:text-black hover:border-black"
               onClick={handleLogoutClick}
@@ -145,10 +189,10 @@ export default function Profile() {
         </div>
       </div>
       <div>
-        <h2 className="text-5xl font-bold text-center">Your Lots</h2>
+        {/* <h2 className="text-5xl font-bold text-center">Your Lots</h2> */}
         <div className="mx-8 max-h-[500px] w-[600px] text-wrap truncate">
-          {userLots.map((lot, index) => (
-            <div key={index} className="flex p-2">
+          {userLots.map((lot) => (
+            <div key={lot._id} className="flex p-2">
               <div className="w-32 h-32 bg-white rounded-lg">
                 <img
                   src={lot.image}

@@ -1,8 +1,8 @@
-import axios from 'axios'
-import { Modal } from "flowbite-react"
-import React, { useEffect, useState } from "react"
-import { useAuth } from "../AuthContext"
-import { getPaginationRange } from "./pagination"
+import axios from "axios";
+import { Modal } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import { useAuth } from "../AuthContext";
+import { getPaginationRange } from "./pagination";
 export default function Lots() {
   const { currentUser } = useAuth();
   const [openModal, setOpenModal] = useState(false);
@@ -28,31 +28,26 @@ export default function Lots() {
         throw new Error("User not authenticated");
       }
 
-      axios.post('/api/lots/create', newLot)
-      .then(resp => {
-        console.log(resp)
-        if(resp?.data){
-          setLots((prevLots) => [...prevLots, resp?.data]);
-          setNewLot({
-            title: "", 
-            description: "",
-            price: "",
-            favorite: false,
-            // image: "",
-          });
-          setOpenCreateMenu(false);
-        }
-      })
-      .catch((err) => {
-        console.error(err)
-        throw new Error(
-          `HTTP error! status: ${err?.response?.data?.error}`
-        );
-      })
-
-      
-      
-     
+      axios
+        .post("/api/lots/create", newLot)
+        .then((resp) => {
+          console.log(resp);
+          if (resp?.data) {
+            setLots((prevLots) => [...prevLots, resp?.data]);
+            setNewLot({
+              title: "",
+              description: "",
+              price: "",
+              favorite: false,
+              // image: "",
+            });
+            setOpenCreateMenu(false);
+          }
+        })
+        .catch((err) => {
+          console.error(err);
+          throw new Error(`HTTP error! status: ${err?.response?.data?.error}`);
+        });
     } catch (error) {
       console.error("Full error object:", error);
       setError(error.message);
@@ -66,9 +61,9 @@ export default function Lots() {
   useEffect(() => {
     const fetchLots = async () => {
       try {
-        const response = await fetch("http://localhost:3001/api/");
-        const userID = currentUser._id;
-        const data = await response.json();
+        const response = await axios.get("http://localhost:3001/api/lots/list");
+        const data = response.data;
+        console.log(data);
         if (Array.isArray(data)) {
           setLots(data);
         } else {
@@ -153,7 +148,7 @@ export default function Lots() {
         Create lot
       </button>
       {error && <p className="text-red-500">{error}</p>}
-      <div className="grid grid-cols-2 mx-8 truncate text-wrap">
+      <div className="grid grid-cols-2 mx-8 truncate text-wrap *:w-[600px]">
         {currentLots.map((lot, index) => (
           <div className="flex p-2" key={index}>
             <div className="w-32 h-32 bg-white rounded-lg">
@@ -173,7 +168,7 @@ export default function Lots() {
                   More info
                 </button>
               </div>
-              <p className="opacity-90">{lot.description}</p>
+              <p className="truncate opacity-90 w-[400px]">{lot.description}</p>
               <div className="flex justify-between gap-2 opacity-90">
                 <p>Category: {lot.category}</p>
                 <p>Price: {lot.price}</p>
