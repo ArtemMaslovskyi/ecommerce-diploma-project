@@ -81,7 +81,7 @@ const login = async (req, res) => {
         }
        
         const token = generateAccessToken(user.name, user._id);
-        await User.findByIdAndUpdate(newUser._id, { token });
+        await User.findByIdAndUpdate(user._id, { token });
         res.status(200).json({ token, user });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
