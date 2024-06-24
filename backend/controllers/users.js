@@ -11,7 +11,7 @@ const avatarDir = path.join(__dirname, '../', 'public', 'avatars');
 
 const generateAccessToken = (username, userId) => {
   console.log('generateAccessToken', username, userId, SECRET_KEY)
-  return jwt.sign({ userId, username,},SECRET_KEY,{expiresIn: 60*60,});
+  return jwt.sign({ userId, username,},SECRET_KEY,{expiresIn: 60*60 ,});
 };
 
 const verifyEmail = (email, verificationToken) => {
@@ -46,7 +46,7 @@ const register = async (req, res) => {
         await newUser.save();
        
         const token = generateAccessToken(newUser.name, newUser._id);
-        
+        await User.findByIdAndUpdate(newUser._id, { token });
         return res.status(200).json({
             token, user: newUser
         })
@@ -57,7 +57,7 @@ const register = async (req, res) => {
 }
 
 const getCurrent = async (req, res) => {
-    const {email, name, _id} = req.user;
+    const {email, name, _id} = req.body;
     res.json({
         email,
         name,
@@ -81,6 +81,7 @@ const login = async (req, res) => {
         }
        
         const token = generateAccessToken(user.name, user._id);
+        await User.findByIdAndUpdate(newUser._id, { token });
         res.status(200).json({ token, user });
     } catch (error) {
         res.status(500).json({ error: 'Internal server error' });
