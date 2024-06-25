@@ -47,7 +47,7 @@ const register = async (req, res) => {
 
     const token = generateAccessToken(newUser.name, newUser._id);
     await User.findByIdAndUpdate(newUser._id, { token });
-    emailSender(verifyEmail);
+    // emailSender(verifyEmail);
     return res.status(200).json({
       token,
       user: newUser,
